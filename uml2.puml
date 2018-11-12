@@ -1,0 +1,62 @@
+@startuml
+
+namespace com.peterwitt.spotyfm{
+    class MainActivity
+    MainActivity : # onCreate() : void
+
+    AppCompatActivity <|-- MainActivity
+    WebReponse <|.. MainActivity
+}
+
+namespace com.peterwitt.spotyfm.RadioAPI{
+    enum ParseMode{
+        CurrentTime,
+        TimeStamp,
+        DayAndHour
+    }
+
+    RadioAPI <|-- Song
+    RadioAPI <.. ParseMode
+
+    class RadioAPI
+    RadioAPI : + mode : ParseMode
+    RadioAPI : + Id : GUID
+    RadioAPI : + screenName : string
+    RadioAPI : - url : string
+    RadioAPI : - ArrayList<Song> : CurrentSongs
+
+    RadioAPI : getCurrentPlaying() : Song[]
+
+    class Song
+    Song : + Name : string
+    Song : + RecordingID : string
+    Song : + Artist : string
+    Song : + ArtistID : string
+    Song : + Album : String 
+    Song : + AlbumID : string
+    Song : + AlbumCover : Image
+
+    Song : + Song(name : string, artist : string)
+    Song : - GetData()
+}
+
+namespace com.peterwitt.spotyfm.Utilities{
+    interface WebReponse{
+        onWebResponse(reponse : string) : void
+        onWebResponseFailure(reason : string) : void
+    }
+
+    interface ImageResponse{
+        onImageResponse(response : string) : void
+        onImageResponseFailure(reason : string) : void
+    }
+    
+    class WebUtils
+    WebUtils : GetURL(url : string, callback : WebResponse)
+    WebUtils : GetImage(url : string, callback : ImageResponse)
+
+    WebUtils <|.. WebReponse
+    WebUtils <|.. ImageResponse
+}
+
+@enduml
