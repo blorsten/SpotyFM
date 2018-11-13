@@ -40,7 +40,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:ems="10"
-        android:hint="1"
+        android:hint="index"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/buttonIndex"
         app:layout_constraintEnd_toEndOf="parent"

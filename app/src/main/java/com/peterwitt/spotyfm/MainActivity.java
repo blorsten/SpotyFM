@@ -80,8 +80,8 @@ public class MainActivity extends AppCompatActivity implements WebResponse, Song
                 title = previousTracks[index].getString("track_title");
             }
 
-            title = new String(title.getBytes("ISO-8859-1"), "UTF-8");
-            artist = new String(artist.getBytes("ISO-8859-1"), "UTF-8");
+            title = new String(title.getBytes("Windows-1252"), "UTF-8");
+            artist = new String(artist.getBytes("Windows-1252"), "UTF-8");
 
             final String testTitle = title;
             final String testArtist = artist;
