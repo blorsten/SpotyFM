@@ -3,7 +3,6 @@ package com.peterwitt.spotyfm.RadioAPI;
 import com.peterwitt.spotyfm.Utilites.WebResponse;
 import com.peterwitt.spotyfm.Utilites.WebUtils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -12,15 +11,15 @@ public class Song {
     public static int IMAGE_MEDIUM = 500;
     public static int IMAGE_LARGE = 1000;
 
-    private String name = "";
+    private String title = "";
     private String artist = "";
     private String album = "";
     private String albumID = "";
 
     private SongDataCallback callback;
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
     public String getArtist() {
@@ -36,7 +35,7 @@ public class Song {
     }
 
     public Song(String name, String artist){
-        this.name = name;
+        this.title = name;
         this.artist = artist;
     }
 
@@ -56,7 +55,7 @@ public class Song {
     private void loadAlbumID() {
         //get artist id if not already fetched
         if(albumID == "")
-            WebUtils.GetURL(String.format("https://musicbrainz.org/ws/2/recording/?query=\"%s\" AND artist:\"%s\" AND status:official AND type:album &fmt=json", name, artist), new WebResponse() {
+            WebUtils.GetURL(String.format("https://musicbrainz.org/ws/2/recording/?query=\"%s\" AND artist:\"%s\" AND status:official AND type:album &fmt=json", title, artist), new WebResponse() {
                 @Override
                 public void onWebResponse(String response) {
                     try {
@@ -70,7 +69,7 @@ public class Song {
                 }
 
                 @Override
-                public void onWebResponseFailue(String reason) {
+                public void onWebResponseFailure(String reason) {
 
                 }
             });

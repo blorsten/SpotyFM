@@ -1,19 +1,82 @@
 package com.peterwitt.spotyfm.RadioAPI;
 
-import com.squareup.picasso.Picasso;
+import com.peterwitt.spotyfm.Utilites.WebResponse;
+import com.peterwitt.spotyfm.Utilites.WebUtils;
 
-import java.util.ArrayList;
-import java.util.UUID;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-public class RadioAPI {
-    public ParseMode mode;
-    public UUID uuid;
-    public String screenName;
+import java.io.UnsupportedEncodingException;
+
+import javax.annotation.WillCloseWhenClosed;
+
+public class RadioAPI implements WebResponse {
+    private String mode;
+    private String name;
     private String url;
-    private Song[] currentPlaying;
+    private String cid;
+    private APIType type;
 
-    public Song[] getCurrentPlaying(){
-        //Do some stuff to get current playing
-        return currentPlaying;
+    public RadioAPI(){}
+
+    public void Setup(){
+        type = APIType.valueOf(mode);
+    }
+
+    public void getRecentyPlayed(){
+        WebUtils.GetURL(url, this);
+    }
+
+    @Override
+    public void onWebResponse(String response) {
+        try {
+            JSONObject root = new JSONObject(response);
+            JSONObject now = root.getJSONObject("now");
+
+            String title;
+            String artist;
+
+            if(root.getJSONObject("now").getString("status").equals("music")){
+                title = now.getString("track_title");
+                artist =now.getString("display_artist");
+            }
+            else{
+                JSONArray previous = root.getJSONArray("previous");
+                JSONObject[] previousTracks = new JSONObject[previous.length()];
+
+                for (int i = 0; i < previous.length(); i++) {
+                    previousTracks[i] = previous.optJSONObject(i);
+                }
+
+                artist = previousTracks[0].getString("display_artist");
+                title = previousTracks[0].getString("track_title");
+            }
+
+            title = new String(title.getBytes("Windows-1252"), "UTF-8");
+            artist = new String(artist.getBytes("Windows-1252"), "UTF-8");
+
+            final String testTitle = title;
+            final String testArtist = artist;
+
+            Song song = new Song(title, artist);
+            song.getData(new SongDataCallback() {
+                @Override
+                public void SongUpdated(Song song) {
+
+                }
+            });
+            //Update list or something
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void onWebResponseFailure(String reason) {
+
     }
 }

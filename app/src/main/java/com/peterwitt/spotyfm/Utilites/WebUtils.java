@@ -21,7 +21,7 @@ public final class WebUtils {
             @Override
             public void onFailure(Call call, IOException e) {
                 call.cancel();
-                callback.onWebResponseFailue(e.getMessage());
+                callback.onWebResponseFailure(e.getMessage());
             }
 
             @Override
