@@ -1,8 +1,11 @@
 package com.peterwitt.spotyfm.RadioAPI;
 
+import android.util.Log;
+
 import com.peterwitt.spotyfm.Utilites.WebResponse;
 import com.peterwitt.spotyfm.Utilites.WebUtils;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,16 +25,32 @@ public class Song {
         return title;
     }
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
     public String getArtist() {
         return artist;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
     }
 
     public String getAlbum() {
         return album;
     }
 
+    public void setAlbum(String album) {
+        this.album = album;
+    }
+
     public String getAlbumID() {
         return albumID;
+    }
+
+    public void setAlbumID(String albumID) {
+        this.albumID = albumID;
     }
 
     public Song(String name, String artist){
@@ -44,7 +63,7 @@ public class Song {
         loadAlbumID();
     }
 
-    public void ready(){
+    public void songUpdated(){
         callback.SongUpdated(this);
     }
 
@@ -59,10 +78,13 @@ public class Song {
                 @Override
                 public void onWebResponse(String response) {
                     try {
-                        JSONObject release = new JSONObject(response).getJSONArray("recordings").getJSONObject(0).getJSONArray("releases").getJSONObject(0);
-                        album = release.getString("title");
-                        albumID = release.getJSONObject("release-group").getString("id");
-                        ready();
+                        JSONArray releases = new JSONObject(response).getJSONArray("recordings");
+                        if(releases.length() > 0){
+                            JSONObject release = releases.getJSONObject(0).getJSONArray("releases").getJSONObject(0);
+                            album = release.getString("title");
+                            albumID = release.getJSONObject("release-group").getString("id");
+                            songUpdated();
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -70,7 +92,7 @@ public class Song {
 
                 @Override
                 public void onWebResponseFailure(String reason) {
-
+                    Log.d("DEBUG", "onWebResponseFailure: " + reason);
                 }
             });
     }

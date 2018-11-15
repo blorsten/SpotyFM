@@ -21,7 +21,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.peterwitt.spotyfm.RadioAPI.RadioAPI;
 import com.peterwitt.spotyfm.RadioAPI.RadioAPIAdapter;
+import com.peterwitt.spotyfm.RadioAPI.RadioAPIButtonCallback;
 import com.peterwitt.spotyfm.RadioAPI.RadioAPIHolder;
+import com.peterwitt.spotyfm.RadioAPI.RadioAPIManager;
 import com.peterwitt.spotyfm.RadioAPI.Song;
 import com.peterwitt.spotyfm.RadioAPI.SongDataCallback;
 import com.peterwitt.spotyfm.Utilites.WebResponse;
@@ -33,8 +35,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RadioAPIButtonCallback {
 
     private RadioAPI[] availableStations;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -50,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 .setQuery(query, RadioAPI.class)
                 .build();
 
-        adapter = new RadioAPIAdapter(options);
+        adapter = new RadioAPIAdapter(options, this);
         RecyclerView recyclerView = findViewById(R.id.recycleViewStations);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -80,5 +88,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         adapter.stopListening();
+    }
+
+    @Override
+    public void onRadioAPIClicked(RadioAPI selected) {
+        RadioAPIManager.getInstance().setCurrentAPI(selected);
+        //Start New Fragment
     }
 }

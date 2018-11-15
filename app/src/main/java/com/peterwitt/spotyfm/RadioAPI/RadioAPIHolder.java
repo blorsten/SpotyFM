@@ -1,24 +1,22 @@
 package com.peterwitt.spotyfm.RadioAPI;
 
+import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.peterwitt.spotyfm.R;
 
 public class RadioAPIHolder extends RecyclerView.ViewHolder {
-    private TextView itemName;
+    private Button itemButton;
 
-    public TextView getItemName() {
-        return itemName;
-    }
-
-    public void setItemName(TextView itemName) {
-        this.itemName = itemName;
+    public Button getItemButton() {
+        return itemButton;
     }
 
     public RadioAPIHolder(View itemView) {
         super(itemView);
-        itemName = itemView.findViewById(R.id.radio_station_list_item_name);
+        itemButton = itemView.findViewById(R.id.radio_station_list_item_name);
     }
 }
