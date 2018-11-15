@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SpotyFM</string>
+    <string name="textViewAvailableStationsText">Radio staions</string>
 </resources>

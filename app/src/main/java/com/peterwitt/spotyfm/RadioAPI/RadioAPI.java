@@ -1,5 +1,7 @@
 package com.peterwitt.spotyfm.RadioAPI;
 
+import android.util.Log;
+
 import com.peterwitt.spotyfm.Utilites.WebResponse;
 import com.peterwitt.spotyfm.Utilites.WebUtils;
 
@@ -18,7 +20,25 @@ public class RadioAPI implements WebResponse {
     private String cid;
     private APIType type;
 
-    public RadioAPI(){}
+    public String getMode() {
+        return mode;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public String getCid() {
+        return cid;
+    }
+
+    public RadioAPI(){
+        Log.d("RadioAPI", String.format("RadioAPI: %s, %s, %s, %s", name, mode, cid, url));
+    }
 
     public void Setup(){
         type = APIType.valueOf(mode);
