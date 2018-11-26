@@ -1,5 +1,8 @@
 package com.peterwitt.spotyfm.RadioAPI;
 
+import android.util.Log;
+
+import com.peterwitt.spotyfm.FragmentHandler;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.RadioAPIDataCallback;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 
@@ -36,16 +39,18 @@ public class RadioAPIManager implements RadioAPIDataCallback, SongDataCallback {
 
     @Override
     public void onRadioAPIDataFetched() {
-
+        FragmentHandler.getInstance().getActiveSongFragment().SongUpdated();
     }
 
     @Override
     public void onRadioAPIDataError() {
-
+        Log.d("DEBUG", "onRadioAPIDataError");
     }
 
     @Override
     public void SongUpdated(Song song) {
-
+        if(FragmentHandler.getInstance().getActiveSongFragment() != null){
+            FragmentHandler.getInstance().getActiveSongFragment().SongUpdated();
+        }
     }
 }

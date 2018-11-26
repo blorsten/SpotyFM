@@ -35,6 +35,7 @@ public class SongAdapter extends RecyclerView.Adapter<SongHolder>{
         holder.artistName.setText(model.getArtist());
         holder.songTitle.setText(model.getTitle());
         holder.timeStamp.setText(model.getTimeStamp());
+        if(model.getAlbumID() != "")
         Picasso.get().load(model.getAlbumConverURL(Song.IMAGE_SMALL)).into(holder.coverArt);
 
         holder.view.setOnClickListener(new View.OnClickListener() {

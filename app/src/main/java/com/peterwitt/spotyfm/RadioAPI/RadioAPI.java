@@ -121,15 +121,18 @@ public class RadioAPI implements WebResponse {
             Song[] songs;
             int index = 0;
 
+            JSONArray previous = root.getJSONArray("previous");
+            int size = previous.length();
+
             //If a track is playing right now, add it first in the array
             if(root.getJSONObject("now").getString("status").equals("music")){
-                songs = new Song[RESULT_COUNT + 1];
+                songs = new Song[size + 1];
                 songs[index++] = new Song(now.getString("track_title"), now.getString("display_artist"));
-            }else
-                songs = new Song[RESULT_COUNT];
+            }else {
+                songs = new Song[size];
+            }
 
             //Get json ref for previous
-            JSONArray previous = root.getJSONArray("previous");
             //Add all previous songs to the array
             for (int i = 0; i < previous.length(); i++) {
                 JSONObject jsonObject = previous.getJSONObject(i);

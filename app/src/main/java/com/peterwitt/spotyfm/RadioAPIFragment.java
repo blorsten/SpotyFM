@@ -45,7 +45,6 @@ public class RadioAPIFragment extends Fragment implements RadioAPIButtonCallback
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         fragmentView = inflater.inflate(R.layout.radio_station_list_fragment, container, false);
         return fragmentView;
-        //return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
