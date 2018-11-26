@@ -1,4 +1,4 @@
-package com.peterwitt.spotyfm.RadioAPI;
+package com.peterwitt.spotyfm.RadioAPI.Callbacks;
 
 public interface RadioAPIDataCallback {
     void onRadioAPIDataFetched();

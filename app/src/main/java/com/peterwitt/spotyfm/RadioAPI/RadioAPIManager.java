@@ -1,6 +1,7 @@
 package com.peterwitt.spotyfm.RadioAPI;
 
-import android.widget.Toast;
+import com.peterwitt.spotyfm.RadioAPI.Callbacks.RadioAPIDataCallback;
+import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 
 public class RadioAPIManager implements RadioAPIDataCallback, SongDataCallback {
     private static final RadioAPIManager ourInstance = new RadioAPIManager();

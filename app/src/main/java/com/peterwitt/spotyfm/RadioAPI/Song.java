@@ -2,6 +2,7 @@ package com.peterwitt.spotyfm.RadioAPI;
 
 import android.util.Log;
 
+import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 import com.peterwitt.spotyfm.Utilites.WebResponse;
 import com.peterwitt.spotyfm.Utilites.WebUtils;
 
@@ -18,6 +19,15 @@ public class Song {
     private String artist = "";
     private String album = "";
     private String albumID = "";
+    private String timeStamp = "";
+
+    public String getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(String timeStamp) {
+        this.timeStamp = timeStamp;
+    }
 
     private SongDataCallback callback;
 

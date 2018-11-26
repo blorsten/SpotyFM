@@ -1,4 +1,4 @@
-package com.peterwitt.spotyfm.RadioAPI;
+package com.peterwitt.spotyfm.RadioAPI.Adapters;
 
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -7,6 +7,9 @@ import android.view.ViewGroup;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.peterwitt.spotyfm.R;
+import com.peterwitt.spotyfm.RadioAPI.Holders.RadioAPIHolder;
+import com.peterwitt.spotyfm.RadioAPI.RadioAPI;
+import com.peterwitt.spotyfm.RadioAPI.Callbacks.RadioAPIButtonCallback;
 
 public class RadioAPIAdapter extends FirestoreRecyclerAdapter<RadioAPI, RadioAPIHolder> {
 

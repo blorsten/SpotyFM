@@ -27,6 +27,8 @@ public class SongListFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         RecyclerView rv = view.findViewById(R.id.song_list_fragment_recycleView);
+
+
         //Setup list thing
 
         TextView t = view.findViewById(R.id.song_list_fragment_title);

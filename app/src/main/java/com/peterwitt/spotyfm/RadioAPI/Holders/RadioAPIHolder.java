@@ -1,4 +1,4 @@
-package com.peterwitt.spotyfm.RadioAPI;
+package com.peterwitt.spotyfm.RadioAPI.Holders;
 
 import android.support.v7.widget.AppCompatButton;
 import android.support.v7.widget.RecyclerView;

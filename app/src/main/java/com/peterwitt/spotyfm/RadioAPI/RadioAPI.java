@@ -2,6 +2,8 @@ package com.peterwitt.spotyfm.RadioAPI;
 
 import android.util.Log;
 
+import com.peterwitt.spotyfm.RadioAPI.Callbacks.RadioAPIDataCallback;
+import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 import com.peterwitt.spotyfm.Utilites.WebResponse;
 import com.peterwitt.spotyfm.Utilites.WebUtils;
 
