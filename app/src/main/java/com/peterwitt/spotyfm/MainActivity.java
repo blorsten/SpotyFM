@@ -1,22 +1,15 @@
 package com.peterwitt.spotyfm;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.peterwitt.spotyfm.RadioAPI.RadioAPI;
-import com.peterwitt.spotyfm.RadioAPI.Adapters.RadioAPIAdapter;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.RadioAPIButtonCallback;
-import com.peterwitt.spotyfm.RadioAPI.RadioAPIManager;
+import com.peterwitt.spotyfm.RadioAPI.RadioAPI;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +18,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        
+        FragmentHandler.getInstance().activity = this;
+        FragmentHandler.getInstance().MakeFragment(R.id.main_activity_frame_layout, new RadioAPIFragment());
     }
 
     @Override

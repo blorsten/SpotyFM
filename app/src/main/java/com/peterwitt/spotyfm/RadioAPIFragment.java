@@ -1,8 +1,10 @@
 package com.peterwitt.spotyfm;
 
-import android.app.Fragment;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -22,32 +24,39 @@ public class RadioAPIFragment extends Fragment implements RadioAPIButtonCallback
     private RadioAPI[] availableStations;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     RadioAPIAdapter adapter;
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        inflater.inflate(R.layout.radio_station_list_fragment, container, false);
-        return super.onCreateView(inflater, container, savedInstanceState);
-    }
+    private View fragmentView;
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    public void onStart() {
         Query query = db.collection("apis").orderBy("name");
         FirestoreRecyclerOptions<RadioAPI> options = new FirestoreRecyclerOptions.Builder<RadioAPI>()
                 .setQuery(query, RadioAPI.class)
                 .build();
 
         adapter = new RadioAPIAdapter(options, this);
-        RecyclerView recyclerView = view.findViewById(R.id.recyclerViewStations);
+        RecyclerView recyclerView = fragmentView.findViewById(R.id.recyclerViewStations);
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
+        super.onStart();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        fragmentView = inflater.inflate(R.layout.radio_station_list_fragment, container, false);
+        return fragmentView;
+        //return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
 
     @Override
     public void onRadioAPIClicked(RadioAPI selected) {
         RadioAPIManager.getInstance().setCurrentAPI(selected);
-        //Start new fragment
+        FragmentHandler.getInstance().MakeFragment(R.id.main_activity_frame_layout, new SongListFragment());
     }
 
     @Override

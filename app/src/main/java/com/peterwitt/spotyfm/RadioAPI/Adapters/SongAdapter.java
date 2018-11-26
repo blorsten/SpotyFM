@@ -17,6 +17,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongHolder>{
 
     public SongListItemCallback callback;
 
+    public SongAdapter(SongListItemCallback callback){
+        this.callback = callback;
+    }
+
     @NonNull
     @Override
     public SongHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
