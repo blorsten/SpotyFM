@@ -28,12 +28,17 @@ public class FragmentHandler {
     }
 
     public void MakeFragment(int resId, Fragment fragment){
-        MakeFragment(resId, fragment, false);
+        MakeFragment(resId, fragment, false, true);
     }
 
-    public void MakeFragment(int resId, Fragment fragment, Boolean clean){
-        FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-        ft.addToBackStack(null);
+    public void MakeFragment(int resId, Fragment fragment, Boolean clean, boolean addToBackStack){
+        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+        if(clean && fragmentManager.getBackStackEntryCount() > 0)
+            fragmentManager.popBackStack(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        if(addToBackStack)
+            ft.addToBackStack(null);
         ft.replace(resId, fragment);
         ft.commit();
     }

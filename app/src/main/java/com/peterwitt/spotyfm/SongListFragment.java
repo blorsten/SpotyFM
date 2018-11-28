@@ -52,11 +52,12 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
     }
 
     public void SongUpdated() {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyDataSetChanged();
-            }
-        });
+        if(getActivity() != null)
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                }
+            });
     }
 }
