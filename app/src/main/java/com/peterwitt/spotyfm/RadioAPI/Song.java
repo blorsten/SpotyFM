@@ -3,6 +3,7 @@ package com.peterwitt.spotyfm.RadioAPI;
 import android.util.Log;
 
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
+import com.peterwitt.spotyfm.SpotifyManager;
 import com.peterwitt.spotyfm.Utilites.WebResponse;
 import com.peterwitt.spotyfm.Utilites.WebUtils;
 
@@ -10,16 +11,25 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+import java.util.regex.Pattern;
+
+import kaaes.spotify.webapi.android.models.AlbumSimple;
+import kaaes.spotify.webapi.android.models.AlbumsPager;
+import kaaes.spotify.webapi.android.models.Track;
+import kaaes.spotify.webapi.android.models.TracksPager;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+
 public class Song {
-    public static int IMAGE_SMALL = 250;
-    public static int IMAGE_MEDIUM = 500;
-    public static int IMAGE_LARGE = 1000;
 
     private String title = "";
     private String artist = "";
     private String album = "";
-    private String albumID = "";
     private String timeStamp = "";
+    private String albumCoverURL = "";
+    private String spotifyID = "";
 
     public String getTimeStamp() {
         return timeStamp;
@@ -55,12 +65,12 @@ public class Song {
         this.album = album;
     }
 
-    public String getAlbumID() {
-        return albumID;
+    public String getSpotifyID() {
+        return spotifyID;
     }
 
-    public void setAlbumID(String albumID) {
-        this.albumID = albumID;
+    public void setSpotifyID(String spotifyID) {
+        this.spotifyID = spotifyID;
     }
 
     public Song(String name, String artist){
@@ -70,40 +80,42 @@ public class Song {
 
     public void getData(SongDataCallback callback){
         this.callback = callback;
-        loadAlbumID();
+        loadInfo();
     }
 
     public void songUpdated(){
         callback.SongUpdated(this);
     }
 
-    public String getAlbumConverURL(int imageSize){
-        return String.format("https://coverartarchive.org/release-group/%s/front-%s", albumID, imageSize);
+    public String getAlbumConverURL(){
+        return albumCoverURL;
+        //return String.format("https://coverartarchive.org/release-group/%s/front-%s", albumID, imageSize);
     }
 
-    private void loadAlbumID() {
-        //get artist id if not already fetched
-        if(albumID == "")
-            WebUtils.GetURL(String.format("https://musicbrainz.org/ws/2/recording/?query=\"%s\" AND artist:\"%s\" AND status:official AND type:album &fmt=json", title, artist), new WebResponse() {
-                @Override
-                public void onWebResponse(String response) {
-                    try {
-                        JSONArray releases = new JSONObject(response).getJSONArray("recordings");
-                        if(releases.length() > 0){
-                            JSONObject release = releases.getJSONObject(0).getJSONArray("releases").getJSONObject(0);
-                            album = release.getString("title");
-                            albumID = release.getJSONObject("release-group").getString("id");
-                            songUpdated();
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
+    private void loadInfo() {
 
-                @Override
-                public void onWebResponseFailure(String reason) {
-                    Log.d("DEBUG", "onWebResponseFailure: " + reason);
+        //remove characters that do not work with spotify
+        String q = getTitle() + " " + getArtist();
+        String regex = "feat.|&|\\(([^)]+)\\)";
+        q = q.replaceAll(regex, "");
+
+        Log.d("TESTING", q);
+
+        SpotifyManager.getInstance().getService().searchTracks(q, new Callback<TracksPager>() {
+            @Override
+            public void success(TracksPager tracksPager, Response response) {
+                List<Track> tracks = tracksPager.tracks.items;
+                if(tracks.size() > 0){
+                    Track track = tracks.get(0);
+                    albumCoverURL = track.album.images.get(0).url;
+                    setSpotifyID(track.id);
+                    songUpdated();
                 }
-            });
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+            }
+        });
     }
 }

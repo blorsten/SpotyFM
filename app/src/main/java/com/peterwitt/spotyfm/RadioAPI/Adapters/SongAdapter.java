@@ -11,6 +11,7 @@ import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongListItemCallback;
 import com.peterwitt.spotyfm.RadioAPI.Holders.SongHolder;
 import com.peterwitt.spotyfm.RadioAPI.RadioAPIManager;
 import com.peterwitt.spotyfm.RadioAPI.Song;
+import com.peterwitt.spotyfm.SpotifyManager;
 import com.squareup.picasso.Picasso;
 
 public class SongAdapter extends RecyclerView.Adapter<SongHolder>{
@@ -35,14 +36,13 @@ public class SongAdapter extends RecyclerView.Adapter<SongHolder>{
         holder.artistName.setText(model.getArtist());
         holder.songTitle.setText(model.getTitle());
         holder.timeStamp.setText(model.getTimeStamp());
-        if(model.getAlbumID() != "")
-        Picasso.get().load(model.getAlbumConverURL(Song.IMAGE_SMALL)).into(holder.coverArt);
+        if(model.getAlbumConverURL() != "")
+            Picasso.get().load(model.getAlbumConverURL()).into(holder.coverArt);
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 callback.onSongListItemClicked(model);
-                Toast.makeText(v.getContext(), "", Toast.LENGTH_SHORT).show();
             }
         });
     }
