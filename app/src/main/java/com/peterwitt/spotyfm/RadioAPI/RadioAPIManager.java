@@ -7,6 +7,7 @@ import com.peterwitt.spotyfm.RadioAPI.Callbacks.RadioAPIDataCallback;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 
 public class RadioAPIManager implements RadioAPIDataCallback, SongDataCallback {
+
     private static final RadioAPIManager ourInstance = new RadioAPIManager();
     private RadioAPI currentAPI;
 
@@ -18,23 +19,23 @@ public class RadioAPIManager implements RadioAPIDataCallback, SongDataCallback {
         return currentAPI;
     }
 
-    public void setCurrentAPI(RadioAPI currentAPI) {
-        this.currentAPI = currentAPI;
-        currentAPI.setup(this, this);
-        currentAPI.getRecentlyPlayed();
-    }
-
-    public void refreshCurrentAPI(){
-        currentAPI.getRecentlyPlayed();
-    }
-
     public Song[] getRecentSongs(){
         if(getCurrentAPI().getRecentSongs() == null)
             return  new Song[]{};
         return getCurrentAPI().getRecentSongs();
     }
 
+    public void setCurrentAPI(RadioAPI currentAPI) {
+        this.currentAPI = currentAPI;
+        currentAPI.setup(this, this);
+        currentAPI.getRecentlyPlayed();
+    }
+
     private RadioAPIManager() {
+    }
+
+    public void refreshCurrentAPI(){
+        currentAPI.getRecentlyPlayed();
     }
 
     @Override

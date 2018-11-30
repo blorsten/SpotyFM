@@ -36,6 +36,7 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+        //Inflate son list and add this to current son list fragment
         fragmentView = inflater.inflate(R.layout.song_list_fragment, container, false);
         FragmentHandler.getInstance().setActiveSongFragment(this);
         return fragmentView;
@@ -43,47 +44,23 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
 
     @Override
     public void onStart() {
+        //Setup recyclerView
         RecyclerView rv = fragmentView.findViewById(R.id.song_list_fragment_recycleView);
         adapter = new SongAdapter(this);
         rv.setAdapter(adapter);
         rv.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
 
+        //Setup Title
         TextView t = fragmentView.findViewById(R.id.song_list_fragment_title);
         t.setText(RadioAPIManager.getInstance().getCurrentAPI().getName());
         super.onStart();
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
     public void onSongListItemClicked(Song selected) {
-        OkHttpClient client = new OkHttpClient();
-
-        RequestBody body = new FormBody.Builder()
-                .build();
-
-        Request request = new Request.Builder()
-                .addHeader("Authorization","Bearer " + SpotifyManager.getInstance().getAccessToken())
-                .url("https://api.spotify.com/v1/me/tracks?ids=" + selected.getSpotifyID())
-                .put(body)
-                .build();
-
-        Log.d("TESTING", request.url().toString());
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Log.d("TESTING", "onResponse: " + response.toString());
-            }
-        });
+        //Add song to users library
+        boolean success = SpotifyManager.getInstance().addSongToLibrary(selected);
+        Toast.makeText(fragmentView.getContext(), selected.getTitle() + (success ? " added " : " not added ")+ "to your library", Toast.LENGTH_SHORT).show();
     }
 
     public void SongUpdated() {

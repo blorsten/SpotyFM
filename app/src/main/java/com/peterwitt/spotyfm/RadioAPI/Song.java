@@ -4,18 +4,7 @@ import android.util.Log;
 
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 import com.peterwitt.spotyfm.SpotifyManager;
-import com.peterwitt.spotyfm.Utilites.WebResponse;
-import com.peterwitt.spotyfm.Utilites.WebUtils;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.List;
-import java.util.regex.Pattern;
-
-import kaaes.spotify.webapi.android.models.AlbumSimple;
-import kaaes.spotify.webapi.android.models.AlbumsPager;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.TracksPager;
 import retrofit.Callback;
@@ -89,7 +78,10 @@ public class Song {
 
     public String getAlbumConverURL(){
         return albumCoverURL;
-        //return String.format("https://coverartarchive.org/release-group/%s/front-%s", albumID, imageSize);
+    }
+
+    public void setAlbumCoverURL(String albumCoverURL) {
+        this.albumCoverURL = albumCoverURL;
     }
 
     private void loadInfo() {
@@ -107,7 +99,8 @@ public class Song {
                 List<Track> tracks = tracksPager.tracks.items;
                 if(tracks.size() > 0){
                     Track track = tracks.get(0);
-                    albumCoverURL = track.album.images.get(0).url;
+                    if(albumCoverURL == "")
+                        albumCoverURL = track.album.images.get(0).url;
                     setSpotifyID(track.id);
                     songUpdated();
                 }

@@ -31,14 +31,17 @@ public class SongAdapter extends RecyclerView.Adapter<SongHolder>{
 
     @Override
     public void onBindViewHolder(@NonNull SongHolder holder, int position) {
+        //get model
         final Song model = RadioAPIManager.getInstance().getRecentSongs()[position];
 
+        //fill data to model
         holder.artistName.setText(model.getArtist());
         holder.songTitle.setText(model.getTitle());
         holder.timeStamp.setText(model.getTimeStamp());
-        if(model.getAlbumConverURL() != "")
+        if(!model.getAlbumConverURL().equals(""))
             Picasso.get().load(model.getAlbumConverURL()).into(holder.coverArt);
 
+        //set on click for view
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

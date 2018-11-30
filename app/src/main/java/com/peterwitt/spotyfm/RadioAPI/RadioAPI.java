@@ -2,6 +2,7 @@ package com.peterwitt.spotyfm.RadioAPI;
 
 import android.util.Log;
 
+import com.google.gson.JsonArray;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.RadioAPIDataCallback;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 import com.peterwitt.spotyfm.Utilites.WebResponse;
@@ -68,15 +69,18 @@ public class RadioAPI implements WebResponse {
 
         switch (apiType){
             case JFMedier:
-                url = url.replace("{DAY}", calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault()));
-                url = url.replace("{HOUR}", calendar.getDisplayName(Calendar.HOUR_OF_DAY,Calendar.LONG, Locale.getDefault()));
+                String day = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.ENGLISH);
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+
+                url = url.replace("{DAY}", day);
+                url = url.replace("{HOUR}", hour + "");
                 break;
 
             case RadioPlay:
                 Date date = calendar.getTime();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                url = url.replace("{YYYY:MM:DD", sdf.format(date));
-                url = url.replace("HH:MM", "23:59");
+                url = url.replace("{YYYY-MM-DD}", sdf.format(date));
+                url = url.replace("{HH:MM}", "23:59");
                 //url = url.replace("HH:MM", DateFormat.getTimeInstance(DateFormat.SHORT).format(date));|
 
             case DR:
@@ -103,10 +107,83 @@ public class RadioAPI implements WebResponse {
         }
     }
 
+    @Override
+    public void onWebResponseFailure(String reason) {
+        Log.d("DEBUG", "onWebResponseFailure: " + reason);
+        apiDataCallback.onRadioAPIDataError();
+    }
+
     private void parseRadioPlay(String response) {
+
+        try {
+            //Get json root ref
+            JSONArray root = new JSONArray(response);
+
+            //Make song array for the songs
+            int size = root.length();
+            Song[] songs = new Song[size];
+            int index = 0;
+
+            //Add all previous songs to the array
+            for (int i = 0; i < root.length(); i++) {
+                JSONObject jsonObject = root.getJSONObject(i);
+                Song song = new Song(jsonObject.getString("nowPlayingTrack"),jsonObject.getString("nowPlayingArtist"));
+                song.setTimeStamp(jsonObject.getString("nowPlayingTime").substring(11,16));
+                song.setAlbumCoverURL(jsonObject.getString("nowPlayingImage"));
+                songs[index++] = song;
+            }
+
+            //Re encode the strings to utf-8 to support all characters
+            for (Song song : songs) {
+                song.setTitle(new String(song.getTitle().getBytes("Windows-1252"), "UTF-8"));
+                song.setArtist(new String(song.getArtist().getBytes("Windows-1252"), "UTF-8"));
+                //Set callback to be RadioAPIManager
+                song.getData(songDataCallback);
+            }
+
+            recentSongs = songs;
+            apiDataCallback.onRadioAPIDataFetched();
+
+        } catch (JSONException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+            apiDataCallback.onRadioAPIDataError();
+        }
     }
 
     private void parseJDMedier(String response) {
+
+        try {
+            //Get json root ref
+            JSONArray root = new JSONArray(response);
+
+            //Make song array for the songs
+            int size = root.length();
+            Song[] songs = new Song[size];
+            int index = 0;
+
+            //Add all previous songs to the array
+            for (int i = 0; i < root.length(); i++) {
+                JSONObject jsonObject = root.getJSONObject(i);
+                Song song = new Song(jsonObject.getString("title"),jsonObject.getString("artist"));
+                song.setTimeStamp(jsonObject.getString("time"));
+                songs[index++] = song;
+            }
+
+            //Re encode the strings to utf-8 to support all characters
+            for (Song song : songs) {
+                song.setTitle(new String(song.getTitle().getBytes("Windows-1252"), "UTF-8"));
+                song.setArtist(new String(song.getArtist().getBytes("Windows-1252"), "UTF-8"));
+                //Set callback to be RadioAPIManager
+                song.getData(songDataCallback);
+            }
+
+            recentSongs = songs;
+            apiDataCallback.onRadioAPIDataFetched();
+
+        } catch (JSONException | UnsupportedEncodingException e) {
+            e.printStackTrace();
+            apiDataCallback.onRadioAPIDataError();
+        }
     }
 
     private void parseDR(String response) {
@@ -127,7 +204,9 @@ public class RadioAPI implements WebResponse {
             //If a track is playing right now, add it first in the array
             if(root.getJSONObject("now").getString("status").equals("music")){
                 songs = new Song[size + 1];
-                songs[index++] = new Song(now.getString("track_title"), now.getString("display_artist"));
+                Song song = new Song(now.getString("track_title"), now.getString("display_artist"));
+                song.setTimeStamp(now.getString("start_time").substring(11,16));
+                songs[index++] = song;
             }else {
                 songs = new Song[size];
             }
@@ -136,9 +215,9 @@ public class RadioAPI implements WebResponse {
             //Add all previous songs to the array
             for (int i = 0; i < previous.length(); i++) {
                 JSONObject jsonObject = previous.getJSONObject(i);
-                songs[index++] = new Song(
-                        jsonObject.getString("track_title"),
-                        jsonObject.getString("display_artist"));
+                Song song = new Song(jsonObject.getString("track_title"),jsonObject.getString("display_artist"));
+                song.setTimeStamp(jsonObject.getString("start_time").substring(11,16));
+                songs[index++] = song;
             }
 
             //Re encode the strings to utf-8 to support all characters
@@ -156,11 +235,5 @@ public class RadioAPI implements WebResponse {
             e.printStackTrace();
             apiDataCallback.onRadioAPIDataError();
         }
-    }
-
-    @Override
-    public void onWebResponseFailure(String reason) {
-        Log.d("DEBUG", "onWebResponseFailure: " + reason);
-        apiDataCallback.onRadioAPIDataError();
     }
 }

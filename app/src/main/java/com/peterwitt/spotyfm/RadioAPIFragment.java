@@ -21,18 +21,19 @@ import com.peterwitt.spotyfm.RadioAPI.RadioAPIManager;
 
 public class RadioAPIFragment extends Fragment implements RadioAPIButtonCallback {
 
-    private RadioAPI[] availableStations;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    RadioAPIAdapter adapter;
+    private RadioAPIAdapter adapter;
     private View fragmentView;
 
     @Override
     public void onStart() {
+        //Build the query for firestore
         Query query = db.collection("apis").orderBy("name");
         FirestoreRecyclerOptions<RadioAPI> options = new FirestoreRecyclerOptions.Builder<RadioAPI>()
                 .setQuery(query, RadioAPI.class)
                 .build();
 
+        //Attach adapter to recyclerView
         adapter = new RadioAPIAdapter(options, this);
         RecyclerView recyclerView = fragmentView.findViewById(R.id.recyclerViewStations);
         recyclerView.setAdapter(adapter);
@@ -48,12 +49,8 @@ public class RadioAPIFragment extends Fragment implements RadioAPIButtonCallback
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
     public void onRadioAPIClicked(RadioAPI selected) {
+        //Update API and load new fragment
         RadioAPIManager.getInstance().setCurrentAPI(selected);
         FragmentHandler.getInstance().MakeFragment(R.id.main_activity_frame_layout, new SongListFragment());
     }
