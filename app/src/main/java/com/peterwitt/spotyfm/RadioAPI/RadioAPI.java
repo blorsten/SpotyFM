@@ -2,7 +2,6 @@ package com.peterwitt.spotyfm.RadioAPI;
 
 import android.util.Log;
 
-import com.google.gson.JsonArray;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.RadioAPIDataCallback;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 import com.peterwitt.spotyfm.Utilites.WebResponse;
@@ -102,7 +101,7 @@ public class RadioAPI implements WebResponse {
                 parseRadioPlay(response);
                 break;
             case JFMedier:
-                parseJDMedier(response);
+                parseJFMedier(response);
                 break;
         }
     }
@@ -131,26 +130,19 @@ public class RadioAPI implements WebResponse {
                 song.setTimeStamp(jsonObject.getString("nowPlayingTime").substring(11,16));
                 song.setAlbumCoverURL(jsonObject.getString("nowPlayingImage"));
                 songs[index++] = song;
-            }
-
-            //Re encode the strings to utf-8 to support all characters
-            for (Song song : songs) {
-                song.setTitle(new String(song.getTitle().getBytes("Windows-1252"), "UTF-8"));
-                song.setArtist(new String(song.getArtist().getBytes("Windows-1252"), "UTF-8"));
-                //Set callback to be RadioAPIManager
                 song.getData(songDataCallback);
             }
 
             recentSongs = songs;
             apiDataCallback.onRadioAPIDataFetched();
 
-        } catch (JSONException | UnsupportedEncodingException e) {
+        } catch (JSONException e){
             e.printStackTrace();
             apiDataCallback.onRadioAPIDataError();
         }
     }
 
-    private void parseJDMedier(String response) {
+    private void parseJFMedier(String response) {
 
         try {
             //Get json root ref
@@ -169,18 +161,22 @@ public class RadioAPI implements WebResponse {
                 songs[index++] = song;
             }
 
-            //Re encode the strings to utf-8 to support all characters
+            //reverse the order of the songs
+            for(int i = 0; i < songs.length / 2; i++)
+            {
+                Song temp = songs[i];
+                songs[i] = songs[songs.length - i - 1];
+                songs[songs.length - i - 1] = temp;
+            }
+
             for (Song song : songs) {
-                song.setTitle(new String(song.getTitle().getBytes("Windows-1252"), "UTF-8"));
-                song.setArtist(new String(song.getArtist().getBytes("Windows-1252"), "UTF-8"));
-                //Set callback to be RadioAPIManager
                 song.getData(songDataCallback);
             }
 
             recentSongs = songs;
             apiDataCallback.onRadioAPIDataFetched();
 
-        } catch (JSONException | UnsupportedEncodingException e) {
+        } catch (JSONException e) {
             e.printStackTrace();
             apiDataCallback.onRadioAPIDataError();
         }
