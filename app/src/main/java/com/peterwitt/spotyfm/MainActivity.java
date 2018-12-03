@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
             switch (response.getType()) {
                 case TOKEN:
                     String token = response.getAccessToken();
-                    SpotifyManager.getInstance().updateToken(token);
+                    SpotifyManager.getInstance().updateToken(token, response.getExpiresIn());
 
                     //Map<String, Object> tset = new HashMap<>();
                     //tset.put("token", token);

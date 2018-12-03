@@ -4,6 +4,8 @@ import android.util.Log;
 
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 import com.peterwitt.spotyfm.SpotifyManager;
+
+import java.util.ArrayList;
 import java.util.List;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.TracksPager;
@@ -19,6 +21,7 @@ public class Song {
     private String timeStamp = "";
     private String albumCoverURL = "";
     private String spotifyID = "";
+    private boolean isUpdated = false;
 
     public String getTimeStamp() {
         return timeStamp;
@@ -28,7 +31,7 @@ public class Song {
         this.timeStamp = timeStamp;
     }
 
-    private SongDataCallback callback;
+    private ArrayList<SongDataCallback> callbacks = new ArrayList<>();
 
     public String getTitle() {
         return title;
@@ -68,12 +71,14 @@ public class Song {
     }
 
     public void getData(SongDataCallback callback){
-        this.callback = callback;
+        callbacks.add(callback);
         loadInfo();
     }
 
     public void songUpdated(){
-        callback.SongUpdated(this);
+        for (SongDataCallback callback : callbacks) {
+            callback.SongUpdated(this);
+        }
     }
 
     public String getAlbumConverURL(){
@@ -82,6 +87,14 @@ public class Song {
 
     public void setAlbumCoverURL(String albumCoverURL) {
         this.albumCoverURL = albumCoverURL;
+    }
+
+    public boolean isReady(){
+        return isUpdated;
+    }
+
+    public void subscribe(SongDataCallback callback){
+        callbacks.add(callback);
     }
 
     private void loadInfo() {
@@ -102,6 +115,7 @@ public class Song {
                     if(albumCoverURL == "")
                         albumCoverURL = track.album.images.get(0).url;
                     setSpotifyID(track.id);
+                    isUpdated = true;
                     songUpdated();
                 }
             }

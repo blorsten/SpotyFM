@@ -23,7 +23,6 @@ public class RadioAPIAdapter extends FirestoreRecyclerAdapter<RadioAPI, RadioAPI
 
     @Override
     protected void onBindViewHolder(@NonNull RadioAPIHolder holder, int position, final @NonNull RadioAPI model) {
-
         holder.getItemButton().setText(model.getName());
         holder.getItemButton().setOnClickListener(new View.OnClickListener() {
             @Override

@@ -169,14 +169,18 @@ public class RadioAPI implements WebResponse {
                 songs[songs.length - i - 1] = temp;
             }
 
+            //Re encode the strings to utf-8 to support all characters
             for (Song song : songs) {
+                song.setTitle(new String(song.getTitle().getBytes("Windows-1252"), "UTF-8"));
+                song.setArtist(new String(song.getArtist().getBytes("Windows-1252"), "UTF-8"));
+                //Set callback to be RadioAPIManager
                 song.getData(songDataCallback);
             }
 
             recentSongs = songs;
             apiDataCallback.onRadioAPIDataFetched();
 
-        } catch (JSONException e) {
+        } catch (JSONException | UnsupportedEncodingException e) {
             e.printStackTrace();
             apiDataCallback.onRadioAPIDataError();
         }

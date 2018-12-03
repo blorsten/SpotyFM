@@ -33,6 +33,7 @@ public class SpotifyManager {
     private SpotifyApi api;
     private SpotifyService service;
     private Activity context;
+    private long expirationTime;
 
     public static SpotifyManager getInstance() {
         return ourInstance;
@@ -61,7 +62,7 @@ public class SpotifyManager {
         this.context = context;
 
         //if no access token received request new one
-        if(accessToken.equals("")) {
+        if(accessToken.equals("") ||(!accessToken.equals("") && System.currentTimeMillis()/1000 > expirationTime-60)) {
             //Build request
             AuthenticationRequest request = new AuthenticationRequest
                     .Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
@@ -81,9 +82,10 @@ public class SpotifyManager {
         }
     }
 
-    public void updateToken(String token){
+    public void updateToken(String token, int expiresIn){
         //save token when its arrived
         accessToken =token;
+        expirationTime = System.currentTimeMillis()/1000 + expiresIn;
         //Setup manager again
         setup(context);
     }

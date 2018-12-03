@@ -3,6 +3,7 @@ package com.peterwitt.spotyfm;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -59,8 +60,8 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
     @Override
     public void onSongListItemClicked(Song selected) {
         //Add song to users library
-        boolean success = SpotifyManager.getInstance().addSongToLibrary(selected);
-        Toast.makeText(fragmentView.getContext(), selected.getTitle() + (success ? " added " : " not added ")+ "to your library", Toast.LENGTH_SHORT).show();
+        RadioAPIManager.getInstance().setLastSelectedSong(selected);
+        FragmentHandler.getInstance().MakeFragment(R.id.main_activity_frame_layout, new SongInfoFragment());
     }
 
     public void SongUpdated() {

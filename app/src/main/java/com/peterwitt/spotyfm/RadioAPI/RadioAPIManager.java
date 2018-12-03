@@ -10,6 +10,7 @@ public class RadioAPIManager implements RadioAPIDataCallback, SongDataCallback {
 
     private static final RadioAPIManager ourInstance = new RadioAPIManager();
     private RadioAPI currentAPI;
+    private Song lastSelectedSong;
 
     public static RadioAPIManager getInstance() {
         return ourInstance;
@@ -17,6 +18,14 @@ public class RadioAPIManager implements RadioAPIDataCallback, SongDataCallback {
 
     public RadioAPI getCurrentAPI() {
         return currentAPI;
+    }
+
+    public Song getLastSelectedSong() {
+        return lastSelectedSong;
+    }
+
+    public void setLastSelectedSong(Song lastSelectedSong) {
+        this.lastSelectedSong = lastSelectedSong;
     }
 
     public Song[] getRecentSongs(){
