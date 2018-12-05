@@ -30,14 +30,12 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
     @Override
     public void onStart() {
         //Setup recyclerView
+        SpotifyManager.getInstance().checkToken();
         RecyclerView rv = fragmentView.findViewById(R.id.song_list_fragment_recycleView);
         adapter = new SongAdapter(this);
         rv.setAdapter(adapter);
         rv.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
 
-        //Setup Title
-        //TextView t = fragmentView.findViewById(R.id.song_list_fragment_title);
-        //t.setText(RadioAPIManager.getInstance().getCurrentAPI().getName());
         MainActivity.instance.runOnUiThread(new Runnable() {
             @Override
             public void run() {

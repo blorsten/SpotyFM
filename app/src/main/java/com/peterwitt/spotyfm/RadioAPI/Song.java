@@ -74,14 +74,21 @@ public class Song {
         this.spotifyID = spotifyID;
     }
 
+    public void setAlbumCoverURL(String albumCoverURL) {
+        this.albumCoverURL = albumCoverURL;
+    }
+
+    public String getAlbumConverURL(){
+        return albumCoverURL;
+    }
+
+    public boolean isReady(){
+        return isUpdated;
+    }
+
     public Song(String name, String artist){
         this.title = name;
         this.artist = artist;
-    }
-
-    public void getData(SongDataCallback callback){
-        callbacks.add(callback);
-        loadInfo();
     }
 
     public void songUpdated(){
@@ -90,16 +97,9 @@ public class Song {
         }
     }
 
-    public String getAlbumConverURL(){
-        return albumCoverURL;
-    }
-
-    public void setAlbumCoverURL(String albumCoverURL) {
-        this.albumCoverURL = albumCoverURL;
-    }
-
-    public boolean isReady(){
-        return isUpdated;
+    public void getData(SongDataCallback callback){
+        callbacks.add(callback);
+        loadInfo();
     }
 
     public void subscribe(SongDataCallback callback){

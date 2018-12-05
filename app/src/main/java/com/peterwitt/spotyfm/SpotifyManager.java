@@ -88,6 +88,11 @@ public class SpotifyManager {
     private SpotifyManager() {
     }
 
+    public void checkToken(){
+        if(accessToken.equals("") ||(!accessToken.equals("") && System.currentTimeMillis()/1000 > expirationTime-60))
+            setup(context);
+    }
+
     public void setup(Activity context){
 
         //Setup the manager
