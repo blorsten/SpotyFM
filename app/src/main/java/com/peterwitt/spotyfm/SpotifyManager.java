@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.peterwitt.spotyfm.RadioAPI.Song;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -11,9 +12,19 @@ import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.Pager;
+import kaaes.spotify.webapi.android.models.Playlist;
+import kaaes.spotify.webapi.android.models.PlaylistSimple;
+import kaaes.spotify.webapi.android.models.UserPrivate;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -21,6 +32,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import retrofit.RetrofitError;
 
 public class SpotifyManager {
 
@@ -34,6 +46,25 @@ public class SpotifyManager {
     private SpotifyService service;
     private Activity context;
     private long expirationTime;
+    private HashMap<String, String> playlists = new HashMap<>();
+    private ArrayList<String> playlistNames = new ArrayList<>();
+    private String selectedPlaylist;
+
+    private UserPrivate me;
+
+    public String getSelectedPlaylist() {
+        return selectedPlaylist;
+    }
+
+    public void setSelectedPlaylist(String selectedPlaylist) {
+        this.selectedPlaylist = selectedPlaylist;
+        SharedPreferences prefs = context.getSharedPreferences("SpotyFM", Context.MODE_PRIVATE);
+        prefs.edit().putString("lastPlaylist", this.selectedPlaylist).apply();
+    }
+
+    public ArrayList<String> getPlaylistNames() {
+        return playlistNames;
+    }
 
     public static SpotifyManager getInstance() {
         return ourInstance;
@@ -58,6 +89,7 @@ public class SpotifyManager {
     }
 
     public void setup(Activity context){
+
         //Setup the manager
         this.context = context;
 
@@ -67,7 +99,13 @@ public class SpotifyManager {
             AuthenticationRequest request = new AuthenticationRequest
                     .Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI)
                     .setShowDialog(false)
-                    .setScopes(new String[]{"user-read-email", "user-library-modify"})
+                    .setScopes(new String[]{
+                            "user-read-email",
+                            "user-library-modify",
+                            "playlist-modify-private",
+                            "playlist-modify-public",
+                            "playlist-read-private",
+                            "user-read-private"})
                     .setCampaign("your-campaign-token")
                     .build();
 
@@ -79,7 +117,65 @@ public class SpotifyManager {
             api = new SpotifyApi();
             api.setAccessToken(accessToken);
             service = api.getService();
+
+            updatePlaylists();
+
+            service.getMe(new retrofit.Callback<UserPrivate>() {
+                @Override
+                public void success(UserPrivate userPrivate, retrofit.client.Response response) {
+                    me = userPrivate;
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
         }
+    }
+
+    private void updatePlaylists(){
+        service.getMyPlaylists(new retrofit.Callback<Pager<PlaylistSimple>>() {
+            @Override
+            public void success(Pager<PlaylistSimple> playlistSimplePager, retrofit.client.Response response) {
+                playlistNames = new ArrayList<>();
+                playlists = new HashMap<>();
+
+                SharedPreferences prefs = context.getSharedPreferences("SpotyFM", Context.MODE_PRIVATE);
+                String lastPlaylist = prefs.getString("lastPlaylist", "");
+
+                playlistNames.add("Library");
+                boolean hasOurPlaylist = false;
+
+                for (PlaylistSimple item : playlistSimplePager.items) {
+                    if(item.name.equals("SpotyFM")){
+                        hasOurPlaylist = true;
+                        break;
+                    }
+                }
+
+                if(lastPlaylist.equals("")){
+                    setSelectedPlaylist(hasOurPlaylist ? "SpotyFM" : "Library");
+                }else {
+                    setSelectedPlaylist(lastPlaylist);
+                }
+
+                if(!hasOurPlaylist)
+                {
+                    playlistNames.add("NEW PLAYLIST: SpotyFM");
+                }
+
+                for (PlaylistSimple playlist : playlistSimplePager.items) {
+                    playlists.put(playlist.name, playlist.id);
+                    playlistNames.add(playlist.name);
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
     }
 
     public void updateToken(String token, int expiresIn){
@@ -90,22 +186,65 @@ public class SpotifyManager {
         setup(context);
     }
 
-    public boolean addSongToLibrary(Song song){
+    public boolean addSongToLibrary(final Song song){
 
         //Check if the song is found on spotify
         if(song.getSpotifyID().equals(""))
             return false;
 
-        //Build empty post body
-        RequestBody body = new FormBody.Builder()
-                .build();
+        Request request = null;
 
-        //build request
-        Request request = new Request.Builder()
-                .addHeader("Authorization","Bearer " + SpotifyManager.getInstance().getAccessToken())
-                .url("https://api.spotify.com/v1/me/tracks?ids=" + song.getSpotifyID())
-                .put(body)
-                .build();
+        if(selectedPlaylist == null)
+            return false;
+
+        if(selectedPlaylist.equals("NEW PLAYLIST: SpotyFM")){
+            HashMap<String, Object> body = new HashMap<>();
+            body.put("name", "SpotyFM");
+
+            service.createPlaylist(me.id ,body , new retrofit.Callback<Playlist>() {
+                @Override
+                public void success(Playlist playlist, retrofit.client.Response response) {
+                    setSelectedPlaylist(playlist.name);
+                    playlists.put(playlist.name, playlist.id);
+                    addSongToLibrary(song);
+                    updatePlaylists();
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
+
+            return true;
+        }
+        else if(selectedPlaylist.equals("Library")){
+
+            //Build empty post body
+            RequestBody body = new FormBody.Builder()
+                    .build();
+
+            //build request
+            request = new Request.Builder()
+                    .addHeader("Authorization","Bearer " + SpotifyManager.getInstance().getAccessToken())
+                    .url("https://api.spotify.com/v1/me/tracks?ids=" + song.getSpotifyID())
+                    .put(body)
+                    .build();
+        }else{
+
+            //Build empty post body
+            RequestBody body = new FormBody.Builder()
+                    .build();
+
+            //build request
+            request = new Request.Builder()
+                    .addHeader("Authorization","Bearer " + SpotifyManager.getInstance().getAccessToken())
+                    .url("https://api.spotify.com/v1/playlists/"+ playlists.get(selectedPlaylist) + "/tracks?uris=spotify:track:" + song.getSpotifyID())
+                    .post(body)
+                    .build();
+        }
+
+        Log.d("TESTING", "addSongToLibrary: " + request.toString());
 
         //post the request
         getClient().newCall(request).enqueue(new Callback() {

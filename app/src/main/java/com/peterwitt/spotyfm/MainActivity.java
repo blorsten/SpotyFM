@@ -35,11 +35,14 @@ import static com.spotify.sdk.android.authentication.LoginActivity.REQUEST_CODE;
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public static MainActivity instance;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        instance = this;
 
         SpotifyManager.getInstance().setup(this);
 

@@ -3,31 +3,15 @@ package com.peterwitt.spotyfm;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 import com.peterwitt.spotyfm.RadioAPI.Adapters.SongAdapter;
-import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongListItemCallback;
 import com.peterwitt.spotyfm.RadioAPI.RadioAPIManager;
 import com.peterwitt.spotyfm.RadioAPI.Song;
-
-import java.io.IOException;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 public class SongListFragment extends Fragment implements SongListItemCallback {
 
@@ -52,8 +36,14 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
         rv.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
 
         //Setup Title
-        TextView t = fragmentView.findViewById(R.id.song_list_fragment_title);
-        t.setText(RadioAPIManager.getInstance().getCurrentAPI().getName());
+        //TextView t = fragmentView.findViewById(R.id.song_list_fragment_title);
+        //t.setText(RadioAPIManager.getInstance().getCurrentAPI().getName());
+        MainActivity.instance.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.instance.setTitle(RadioAPIManager.getInstance().getCurrentAPI().getName());
+            }
+        });
         super.onStart();
     }
 

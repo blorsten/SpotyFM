@@ -21,7 +21,16 @@ public class Song {
     private String timeStamp = "";
     private String albumCoverURL = "";
     private String spotifyID = "";
+    private String searchQuery = "";
     private boolean isUpdated = false;
+
+    public String getSearchQuery() {
+        return searchQuery;
+    }
+
+    public void setSearchQuery(String searchQuery) {
+        this.searchQuery = searchQuery;
+    }
 
     public String getTimeStamp() {
         return timeStamp;
@@ -100,19 +109,23 @@ public class Song {
     private void loadInfo() {
 
         //remove characters that do not work with spotify
-        String q = getTitle() + " " + getArtist();
-        String regex = "feat.|&|\\(([^)]+)\\)";
-        q = q.replaceAll(regex, "");
+        if(searchQuery.equals(""))
+            searchQuery = getTitle() + " " + getArtist();
+        String regex = "feat\\.|&|ft\\.|\\(([^)]+)\\)|\\[([^)]+)\\]";
+        searchQuery = searchQuery.replaceAll(regex, "");
+        searchQuery = searchQuery.replaceAll(" and ", " ");
+        searchQuery = searchQuery.replaceAll("S!vas", "Sivas");
+        searchQuery = searchQuery.replaceAll("Stewie Wonder", "Stevie Wonder");
 
-        Log.d("TESTING", q);
+        Log.d("TESTING", searchQuery);
 
-        SpotifyManager.getInstance().getService().searchTracks(q, new Callback<TracksPager>() {
+        SpotifyManager.getInstance().getService().searchTracks(searchQuery, new Callback<TracksPager>() {
             @Override
             public void success(TracksPager tracksPager, Response response) {
                 List<Track> tracks = tracksPager.tracks.items;
                 if(tracks.size() > 0){
                     Track track = tracks.get(0);
-                    if(albumCoverURL == "")
+                    if(albumCoverURL.equals(""))
                         albumCoverURL = track.album.images.get(0).url;
                     setSpotifyID(track.id);
                     isUpdated = true;

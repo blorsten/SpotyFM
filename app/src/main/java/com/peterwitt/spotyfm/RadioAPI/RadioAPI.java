@@ -128,7 +128,7 @@ public class RadioAPI implements WebResponse {
                 JSONObject jsonObject = root.getJSONObject(i);
                 Song song = new Song(jsonObject.getString("nowPlayingTrack"),jsonObject.getString("nowPlayingArtist"));
                 song.setTimeStamp(jsonObject.getString("nowPlayingTime").substring(11,16));
-                song.setAlbumCoverURL(jsonObject.getString("nowPlayingImage"));
+                //song.setAlbumCoverURL(jsonObject.getString("nowPlayingImage"));
                 songs[index++] = song;
                 song.getData(songDataCallback);
             }
@@ -171,8 +171,10 @@ public class RadioAPI implements WebResponse {
 
             //Re encode the strings to utf-8 to support all characters
             for (Song song : songs) {
-                song.setTitle(new String(song.getTitle().getBytes("Windows-1252"), "UTF-8"));
-                song.setArtist(new String(song.getArtist().getBytes("Windows-1252"), "UTF-8"));
+                if(cid.equals("classic")){
+                    song.setTitle(new String(song.getTitle().getBytes("Windows-1252"), "UTF-8"));
+                    song.setArtist(new String(song.getArtist().getBytes("Windows-1252"), "UTF-8"));
+                }
                 //Set callback to be RadioAPIManager
                 song.getData(songDataCallback);
             }

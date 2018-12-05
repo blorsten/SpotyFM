@@ -1,20 +1,20 @@
 package com.peterwitt.spotyfm;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
-import com.peterwitt.spotyfm.RadioAPI.RadioAPI;
 import com.peterwitt.spotyfm.RadioAPI.RadioAPIManager;
 import com.peterwitt.spotyfm.RadioAPI.Song;
 import com.squareup.picasso.Picasso;
@@ -48,9 +48,14 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
             @Override
             public void onClick(View v) {
                 boolean success = SpotifyManager.getInstance().addSongToLibrary(song);
-                Toast.makeText(fragmentView.getContext(),
-                        song.getTitle() + (success ? " added " : " not added ")+ "to your library",
-                        Toast.LENGTH_SHORT).show();
+                String message = null;
+
+                if(success)
+                    message = song.getTitle() + " added to " + SpotifyManager.getInstance().getSelectedPlaylist();
+                else
+                    message = "Error adding " + song.getTitle() + " to " + SpotifyManager.getInstance().getSelectedPlaylist();
+
+                Toast.makeText(fragmentView.getContext(),message,Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -58,7 +63,26 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
         selectPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(fragmentView.getContext(), "Select Playlist pressed", Toast.LENGTH_SHORT).show();
+                final String[] playlistNames = SpotifyManager.getInstance().getPlaylistNames().toArray(new String[0]);
+                int currentIntem = 0;
+
+                for (int i = 0; i < playlistNames.length; i++) {
+                    if(playlistNames[i].equals(SpotifyManager.getInstance().getSelectedPlaylist())){
+                        currentIntem = i;
+                        break;
+                    }
+                }
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext());
+                builder.setTitle("Pick playlist")
+                        .setSingleChoiceItems(playlistNames, currentIntem, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                SpotifyManager.getInstance().setSelectedPlaylist(playlistNames[which]);
+                                dialog.dismiss();
+                            }
+                        });
+
+                builder.show();
             }
         });
 
@@ -66,7 +90,37 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
         tweakSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(fragmentView.getContext(), "TweakSearch pressed", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext());
+                final EditText input = new EditText(fragmentView.getContext());
+                input.setText(song.getSearchQuery());
+                builder.setTitle("Change spotify search");
+                builder.setView(input);
+
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String value = input.getText().toString().trim();
+                        song.setSearchQuery(value);
+                        song.setAlbumCoverURL("");
+                        song.getData(new SongDataCallback() {
+                            @Override
+                            public void SongUpdated(Song song) {
+                                if(!song.getSpotifyID().equals(""))
+                                    setupFragment();
+                                else
+                                    Toast.makeText(fragmentView.getContext(), "Error searching for given song", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                });
+
+                builder.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dialog.cancel();
+                            }
+                        });
+
+                builder.show();
             }
         });
 
