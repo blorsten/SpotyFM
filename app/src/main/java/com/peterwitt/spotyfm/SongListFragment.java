@@ -65,19 +65,14 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
     }
 
     public void SongUpdated() {
-        if(getActivity() != null && fragmentView != null)
-            swipeRefreshLayout.setRefreshing(false);
-
-            try{
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        adapter.notifyDataSetChanged();
-                    }
-                });
-            }
-            catch (NullPointerException e){
-                Log.d("TESTING", "SongUpdated: " + e);
-            }
+        if(getActivity() != null && fragmentView != null){
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            });
+        }
     }
 }

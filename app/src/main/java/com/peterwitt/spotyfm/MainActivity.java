@@ -68,15 +68,6 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
 
-        menu.findItem(R.id.options_refresh).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                if(RadioAPIManager.getInstance().getCurrentAPI() != null)
-                    RadioAPIManager.getInstance().refreshCurrentAPI();
-                return true;
-            }
-        });
-
         menu.findItem(R.id.options_pick_time).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
