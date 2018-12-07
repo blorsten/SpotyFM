@@ -3,6 +3,7 @@ package com.peterwitt.spotyfm;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,6 +18,7 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
 
     private View fragmentView;
     private SongAdapter adapter;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     @Nullable
     @Override
@@ -24,6 +26,15 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
         //Inflate son list and add this to current son list fragment
         fragmentView = inflater.inflate(R.layout.song_list_fragment, container, false);
         FragmentHandler.getInstance().setActiveSongFragment(this);
+
+        swipeRefreshLayout = fragmentView.findViewById(R.id.song_list_fragment_swipeLayout);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                RadioAPIManager.getInstance().refreshCurrentAPI();
+            }
+        });
+
         return fragmentView;
     }
 
@@ -54,6 +65,7 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
 
     public void SongUpdated() {
         if(getActivity() != null)
+            swipeRefreshLayout.setRefreshing(false);
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
