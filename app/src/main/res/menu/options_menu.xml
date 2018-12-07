@@ -3,7 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/options_refresh"
-        app:showAsAction="always"
-        android:title="refresh"
-        android:icon="@android:drawable/ic_popup_sync" />
+        app:showAsAction="never"
+        android:title="Refresh" />
+
+    <item
+        android:id="@+id/options_pick_time"
+        app:showAsAction="never"
+        android:title="Pick time" />
+
+    <item
+        android:id="@+id/options_reset_time"
+        app:showAsAction="never"
+        android:title="Reset time" />
 </menu>

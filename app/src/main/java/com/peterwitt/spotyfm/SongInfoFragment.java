@@ -73,7 +73,7 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
                     }
                 }
 
-                final AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext());
                 builder.setTitle("Pick playlist")
                         .setSingleChoiceItems(playlistNames, currentIntem, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {

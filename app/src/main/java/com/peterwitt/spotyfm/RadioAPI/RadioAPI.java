@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.RadioAPIDataCallback;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
+import com.peterwitt.spotyfm.SpotifyManager;
 import com.peterwitt.spotyfm.Utilites.WebResponse;
 import com.peterwitt.spotyfm.Utilites.WebUtils;
 
@@ -12,6 +13,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -63,30 +65,28 @@ public class RadioAPI implements WebResponse {
 
     void getRecentlyPlayed(){
 
-        url = url.replace("{CID}", cid);
-        Calendar calendar = Calendar.getInstance();
+        String tempUrl = url.replace("{CID}", cid);
+        DateTime dateTime = SpotifyManager.getInstance().getDateTime();
 
         switch (apiType){
             case JFMedier:
-                String day = calendar.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.ENGLISH);
-                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                String day = dateTime.getNameOfDay();
+                int hour = dateTime.hour;
 
-                url = url.replace("{DAY}", day);
-                url = url.replace("{HOUR}", hour + "");
+                tempUrl = tempUrl.replace("{DAY}", day);
+                tempUrl = tempUrl.replace("{HOUR}", hour + "");
                 break;
 
             case RadioPlay:
-                Date date = calendar.getTime();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-                url = url.replace("{YYYY-MM-DD}", sdf.format(date));
-                url = url.replace("{HH:MM}", "23:59");
-                //url = url.replace("HH:MM", DateFormat.getTimeInstance(DateFormat.SHORT).format(date));|
+                tempUrl = tempUrl.replace("{YYYY-MM-DD}", dateTime.getCurrentDate());
+                tempUrl = tempUrl.replace("{HH:MM}", dateTime.getCurrentTime());
 
             case DR:
-                url = url.replace("{COUNT}", String.valueOf(RESULT_COUNT));
+                tempUrl = tempUrl.replace("{COUNT}", String.valueOf(RESULT_COUNT));
         }
 
-        WebUtils.GetURL(url, this);
+        Log.d("URL", tempUrl);
+        WebUtils.GetURL(tempUrl, this);
     }
 
     @Override

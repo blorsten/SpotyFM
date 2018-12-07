@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.peterwitt.spotyfm.RadioAPI.DateTime;
 import com.peterwitt.spotyfm.RadioAPI.Song;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -35,7 +36,6 @@ import okhttp3.Response;
 import retrofit.RetrofitError;
 
 public class SpotifyManager {
-
     public static final int REQUEST_CODE = 1337;
     private static final String CLIENT_ID = "cb0dc3e4eb424c238e8dec78309e37ae";
     private static final String REDIRECT_URI = "com.peterwitt.spotyfm://callback";
@@ -49,6 +49,16 @@ public class SpotifyManager {
     private HashMap<String, String> playlists = new HashMap<>();
     private ArrayList<String> playlistNames = new ArrayList<>();
     private String selectedPlaylist;
+
+    private DateTime dateTime = new DateTime();
+
+    public DateTime getDateTime() {
+        return dateTime;
+    }
+
+    public void setDateTime(DateTime dateTime) {
+        this.dateTime = dateTime;
+    }
 
     private UserPrivate me;
 
