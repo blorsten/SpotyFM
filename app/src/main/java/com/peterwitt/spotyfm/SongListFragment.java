@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,13 +65,19 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
     }
 
     public void SongUpdated() {
-        if(getActivity() != null)
+        if(getActivity() != null && fragmentView != null)
             swipeRefreshLayout.setRefreshing(false);
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    adapter.notifyDataSetChanged();
-                }
-            });
+
+            try{
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+            }
+            catch (NullPointerException e){
+                Log.d("TESTING", "SongUpdated: " + e);
+            }
     }
 }

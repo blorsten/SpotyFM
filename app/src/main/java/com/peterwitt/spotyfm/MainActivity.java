@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                                 DateTime dateTime = SpotifyManager.getInstance().getDateTime();
                                 dateTime.hour = hourOfDay;
                                 dateTime.minute= minute;
+                                dateTime.setSetToCustom(true);
                                 RadioAPIManager.getInstance().refreshCurrentAPI();
                             }
                         }, mHour, mMinute, true);
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         menu.findItem(R.id.options_reset_time).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                SpotifyManager.getInstance().setDateTime(new DateTime());
+                SpotifyManager.getInstance().getDateTime().resetTime();
                 RadioAPIManager.getInstance().refreshCurrentAPI();
                 return true;
             }
