@@ -16,15 +16,14 @@ public class RadioAPIAdapter extends FirestoreRecyclerAdapter<RadioAPI, RadioAPI
     private RadioAPIButtonCallback callback;
 
     public RadioAPIAdapter(@NonNull FirestoreRecyclerOptions<RadioAPI> options, RadioAPIButtonCallback callback) {
-
         super(options);
         this.callback = callback;
     }
 
     @Override
     protected void onBindViewHolder(@NonNull RadioAPIHolder holder, int position, final @NonNull RadioAPI model) {
-        holder.getItemButton().setText(model.getName());
-        holder.getItemButton().setOnClickListener(new View.OnClickListener() {
+        holder.itemButton.setText(model.getName());
+        holder.itemButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 callback.onRadioAPIClicked(model);
@@ -35,7 +34,6 @@ public class RadioAPIAdapter extends FirestoreRecyclerAdapter<RadioAPI, RadioAPI
     @NonNull
     @Override
     public RadioAPIHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.radio_station_list_item, parent, false);
         return new RadioAPIHolder(v);
     }

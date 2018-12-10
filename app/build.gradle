@@ -45,13 +45,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.spotify.android:auth:1.1.0'
     implementation 'com.github.kaaes:spotify-web-api-android:0.4.1'
-
-    // Check for v11.4.2 or higher
     implementation 'com.google.firebase:firebase-core:16.0.4'
-
-    // Add dependency
     implementation 'com.crashlytics.sdk.android:crashlytics:2.9.6'
-
-
 }
 apply plugin: 'com.google.gms.google-services'

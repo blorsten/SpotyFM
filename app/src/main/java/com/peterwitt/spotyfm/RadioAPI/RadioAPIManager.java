@@ -54,7 +54,7 @@ public class RadioAPIManager implements RadioAPIDataCallback, SongDataCallback {
 
     @Override
     public void onRadioAPIDataError() {
-        Log.d("DEBUG", "onRadioAPIDataError");
+        Log.d("TESTING", "onRadioAPIDataError");
     }
 
     @Override

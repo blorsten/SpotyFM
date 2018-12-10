@@ -5,21 +5,21 @@ import android.util.Log;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.RadioAPIDataCallback;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 import com.peterwitt.spotyfm.SpotifyManager;
-import com.peterwitt.spotyfm.Utilites.WebResponse;
-import com.peterwitt.spotyfm.Utilites.WebUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
-public class RadioAPI implements WebResponse {
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+public class RadioAPI {
     private final int RESULT_COUNT = 10;
 
     private String type;
@@ -39,14 +39,6 @@ public class RadioAPI implements WebResponse {
 
     public String getName() {
         return name;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getCid() {
-        return cid;
     }
 
     Song[] getRecentSongs() {
@@ -85,31 +77,35 @@ public class RadioAPI implements WebResponse {
                 tempUrl = tempUrl.replace("{COUNT}", String.valueOf(RESULT_COUNT));
         }
 
-        Log.d("URL", tempUrl);
-        WebUtils.GetURL(tempUrl, this);
-    }
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(tempUrl)
+                .build();
 
-    @Override
-    public void onWebResponse(String response) {
+        //Set callback to return the response as a string when done
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+                Log.d("TESTING", "onWebResponseFailure: " + e.getMessage());
+            }
 
-        switch (apiType){
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
 
-            case DR:
-                parseDR(response);
-                break;
-            case RadioPlay:
-                parseRadioPlay(response);
-                break;
-            case JFMedier:
-                parseJFMedier(response);
-                break;
-        }
-    }
-
-    @Override
-    public void onWebResponseFailure(String reason) {
-        Log.d("DEBUG", "onWebResponseFailure: " + reason);
-        apiDataCallback.onRadioAPIDataError();
+                switch (apiType){
+                    case DR:
+                        parseDR(response.body().string());
+                        break;
+                    case RadioPlay:
+                        parseRadioPlay(response.body().string());
+                        break;
+                    case JFMedier:
+                        parseJFMedier(response.body().string());
+                        break;
+                }
+            }
+        });
     }
 
     private void parseRadioPlay(String response) {
@@ -130,7 +126,7 @@ public class RadioAPI implements WebResponse {
                 song.setTimeStamp(jsonObject.getString("nowPlayingTime").substring(11,16));
                 //song.setAlbumCoverURL(jsonObject.getString("nowPlayingImage"));
                 songs[index++] = song;
-                song.getData(songDataCallback);
+                song.fetchData(songDataCallback);
             }
 
             recentSongs = songs;
@@ -176,7 +172,7 @@ public class RadioAPI implements WebResponse {
                     song.setArtist(new String(song.getArtist().getBytes("Windows-1252"), "UTF-8"));
                 }
                 //Set callback to be RadioAPIManager
-                song.getData(songDataCallback);
+                song.fetchData(songDataCallback);
             }
 
             recentSongs = songs;
@@ -227,7 +223,7 @@ public class RadioAPI implements WebResponse {
                 song.setTitle(new String(song.getTitle().getBytes("Windows-1252"), "UTF-8"));
                 song.setArtist(new String(song.getArtist().getBytes("Windows-1252"), "UTF-8"));
                 //Set callback to be RadioAPIManager
-                song.getData(songDataCallback);
+                song.fetchData(songDataCallback);
             }
 
             recentSongs = songs;

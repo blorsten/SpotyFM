@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.peterwitt.spotyfm.RadioAPI.DateTime;
 import com.peterwitt.spotyfm.RadioAPI.Song;
@@ -14,11 +13,7 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
@@ -36,7 +31,7 @@ import okhttp3.Response;
 import retrofit.RetrofitError;
 
 public class SpotifyManager {
-    public static final int REQUEST_CODE = 1337;
+    static final int REQUEST_CODE = 1337;
     private static final String CLIENT_ID = "cb0dc3e4eb424c238e8dec78309e37ae";
     private static final String REDIRECT_URI = "com.peterwitt.spotyfm://callback";
     private static final SpotifyManager ourInstance = new SpotifyManager();
@@ -49,35 +44,21 @@ public class SpotifyManager {
     private HashMap<String, String> playlists = new HashMap<>();
     private ArrayList<String> playlistNames = new ArrayList<>();
     private String selectedPlaylist;
-
     private DateTime dateTime = new DateTime();
-
-    public DateTime getDateTime() {
-        return dateTime;
-    }
-
-    public void setDateTime(DateTime dateTime) {
-        this.dateTime = dateTime;
-    }
-
     private UserPrivate me;
 
-    public String getSelectedPlaylist() {
+    String getSelectedPlaylist() {
         return selectedPlaylist;
     }
 
-    public void setSelectedPlaylist(String selectedPlaylist) {
+    void setSelectedPlaylist(String selectedPlaylist) {
         this.selectedPlaylist = selectedPlaylist;
         SharedPreferences prefs = context.getSharedPreferences("SpotyFM", Context.MODE_PRIVATE);
         prefs.edit().putString("lastPlaylist", this.selectedPlaylist).apply();
     }
 
-    public ArrayList<String> getPlaylistNames() {
+    ArrayList<String> getPlaylistNames() {
         return playlistNames;
-    }
-
-    public static SpotifyManager getInstance() {
-        return ourInstance;
     }
 
     private OkHttpClient getClient(){
@@ -87,8 +68,12 @@ public class SpotifyManager {
         return _client;
     }
 
-    public String getAccessToken() {
-        return accessToken;
+    public DateTime getDateTime() {
+        return dateTime;
+    }
+
+    public static SpotifyManager getInstance() {
+        return ourInstance;
     }
 
     public SpotifyService getService() {
@@ -98,12 +83,12 @@ public class SpotifyManager {
     private SpotifyManager() {
     }
 
-    public void checkToken(){
+    void checkToken(){
         if(accessToken.equals("") ||(!accessToken.equals("") && System.currentTimeMillis()/1000 > expirationTime-60))
             setup(context);
     }
 
-    public void setup(Activity context){
+    void setup(Activity context){
 
         //Setup the manager
         this.context = context;
@@ -188,12 +173,12 @@ public class SpotifyManager {
 
             @Override
             public void failure(RetrofitError error) {
-
+                Log.d("TESTING", "failure: could not get playlists: " + error);
             }
         });
     }
 
-    public void updateToken(String token, int expiresIn){
+    void updateToken(String token, int expiresIn){
         //save token when its arrived
         accessToken =token;
         expirationTime = System.currentTimeMillis()/1000 + expiresIn;
@@ -201,13 +186,13 @@ public class SpotifyManager {
         setup(context);
     }
 
-    public boolean addSongToLibrary(final Song song){
+    boolean addSongToLibrary(final Song song){
 
         //Check if the song is found on spotify
         if(song.getSpotifyID().equals(""))
             return false;
 
-        Request request = null;
+        Request request;
 
         if(selectedPlaylist == null)
             return false;
@@ -227,7 +212,7 @@ public class SpotifyManager {
 
                 @Override
                 public void failure(RetrofitError error) {
-
+                    Log.d("TESTING", "failure: Could not create playlist: " + error);
                 }
             });
 
@@ -241,7 +226,7 @@ public class SpotifyManager {
 
             //build request
             request = new Request.Builder()
-                    .addHeader("Authorization","Bearer " + SpotifyManager.getInstance().getAccessToken())
+                    .addHeader("Authorization","Bearer " + accessToken)
                     .url("https://api.spotify.com/v1/me/tracks?ids=" + song.getSpotifyID())
                     .put(body)
                     .build();
@@ -253,13 +238,11 @@ public class SpotifyManager {
 
             //build request
             request = new Request.Builder()
-                    .addHeader("Authorization","Bearer " + SpotifyManager.getInstance().getAccessToken())
+                    .addHeader("Authorization","Bearer " + accessToken)
                     .url("https://api.spotify.com/v1/playlists/"+ playlists.get(selectedPlaylist) + "/tracks?uris=spotify:track:" + song.getSpotifyID())
                     .post(body)
                     .build();
         }
-
-        Log.d("TESTING", "addSongToLibrary: " + request.toString());
 
         //post the request
         getClient().newCall(request).enqueue(new Callback() {
@@ -269,7 +252,7 @@ public class SpotifyManager {
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call, Response response) {
                 Log.d("TESTING", "onResponse: " + response.toString());
             }
         });

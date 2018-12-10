@@ -1,7 +1,5 @@
 package com.peterwitt.spotyfm.RadioAPI;
 
-import android.util.Log;
-
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongDataCallback;
 import com.peterwitt.spotyfm.SpotifyManager;
 
@@ -17,12 +15,13 @@ public class Song {
 
     private String title = "";
     private String artist = "";
-    private String album = "";
     private String timeStamp = "";
     private String albumCoverURL = "";
     private String spotifyID = "";
     private String searchQuery = "";
     private boolean isUpdated = false;
+
+    private ArrayList<SongDataCallback> callbacks = new ArrayList<>();
 
     public String getSearchQuery() {
         return searchQuery;
@@ -40,8 +39,6 @@ public class Song {
         this.timeStamp = timeStamp;
     }
 
-    private ArrayList<SongDataCallback> callbacks = new ArrayList<>();
-
     public String getTitle() {
         return title;
     }
@@ -58,20 +55,8 @@ public class Song {
         this.artist = artist;
     }
 
-    public String getAlbum() {
-        return album;
-    }
-
-    public void setAlbum(String album) {
-        this.album = album;
-    }
-
     public String getSpotifyID() {
         return spotifyID;
-    }
-
-    public void setSpotifyID(String spotifyID) {
-        this.spotifyID = spotifyID;
     }
 
     public void setAlbumCoverURL(String albumCoverURL) {
@@ -82,7 +67,7 @@ public class Song {
         return albumCoverURL;
     }
 
-    public boolean isReady(){
+    public boolean getIsUpdated(){
         return isUpdated;
     }
 
@@ -91,13 +76,13 @@ public class Song {
         this.artist = artist;
     }
 
-    public void songUpdated(){
+    private void songUpdated(){
         for (SongDataCallback callback : callbacks) {
             callback.SongUpdated(this);
         }
     }
 
-    public void getData(SongDataCallback callback){
+    public void fetchData(SongDataCallback callback){
         callbacks.add(callback);
         loadInfo();
     }
@@ -117,8 +102,6 @@ public class Song {
         searchQuery = searchQuery.replaceAll("S!vas", "Sivas");
         searchQuery = searchQuery.replaceAll("Stewie Wonder", "Stevie Wonder");
 
-        Log.d("TESTING", searchQuery);
-
         SpotifyManager.getInstance().getService().searchTracks(searchQuery, new Callback<TracksPager>() {
             @Override
             public void success(TracksPager tracksPager, Response response) {
@@ -127,7 +110,7 @@ public class Song {
                     Track track = tracks.get(0);
                     if(albumCoverURL.equals(""))
                         albumCoverURL = track.album.images.get(0).url;
-                    setSpotifyID(track.id);
+                    spotifyID = track.id;
                     isUpdated = true;
                     songUpdated();
                 }

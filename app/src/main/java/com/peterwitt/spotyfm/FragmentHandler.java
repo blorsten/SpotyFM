@@ -1,6 +1,5 @@
 package com.peterwitt.spotyfm;
 
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -9,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 public class FragmentHandler {
     private static final FragmentHandler ourInstance = new FragmentHandler();
     public AppCompatActivity activity;
-
     private SongListFragment activeSongFragment;
 
     public SongListFragment getActiveSongFragment() {

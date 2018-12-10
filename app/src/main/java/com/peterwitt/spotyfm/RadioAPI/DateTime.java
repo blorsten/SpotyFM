@@ -4,21 +4,17 @@ import java.util.Calendar;
 
 public class DateTime{
     private enum dayName{
-        sunday, monday, tuesday, wednsday, thursday, friday, saturday
+        sunday, monday, tuesday, wednesday, thursday, friday, saturday
     }
 
-    public int year;
-    public int month;
-    public int day;
-    public int dayOfWeek;
+    private int year;
+    private int month;
+    private int day;
+    private int dayOfWeek;
     public int hour;
     public int minute;
 
     private boolean isSetToCustom;
-
-    public boolean isSetToCustom() {
-        return isSetToCustom;
-    }
 
     public void setSetToCustom(boolean setToCustom) {
         isSetToCustom = setToCustom;

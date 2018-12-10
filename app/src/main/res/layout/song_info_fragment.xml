@@ -83,15 +83,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <!--<com.peterwitt.spotyfm.Views.MaterialPlayPauseButton-->
-                <!--android:id="@+id/materialPlayPauseButton"-->
-                <!--android:layout_width="45dp"-->
-                <!--android:layout_height="45dp"-->
-                <!--android:layout_marginTop="8dp"-->
-                <!--android:layout_marginEnd="8dp"-->
-                <!--app:layout_constraintEnd_toStartOf="@+id/button_select_playlist"-->
-                <!--app:layout_constraintTop_toTopOf="parent" />-->
-
             </android.support.constraint.ConstraintLayout>
 
             <Button
@@ -105,7 +96,9 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
         </android.support.constraint.ConstraintLayout>
+
     </android.support.v4.widget.NestedScrollView>
 
 </android.support.constraint.ConstraintLayout>

@@ -5,18 +5,16 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import com.peterwitt.spotyfm.R;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongListItemCallback;
 import com.peterwitt.spotyfm.RadioAPI.Holders.SongHolder;
 import com.peterwitt.spotyfm.RadioAPI.RadioAPIManager;
 import com.peterwitt.spotyfm.RadioAPI.Song;
-import com.peterwitt.spotyfm.SpotifyManager;
 import com.squareup.picasso.Picasso;
 
 public class SongAdapter extends RecyclerView.Adapter<SongHolder>{
 
-    public SongListItemCallback callback;
+    private SongListItemCallback callback;
 
     public SongAdapter(SongListItemCallback callback){
         this.callback = callback;

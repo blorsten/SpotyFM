@@ -25,9 +25,6 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
     private TextView trackTitle;
     private TextView artistName;
     private ImageView albumImage;
-    private Button addToSpotify;
-    private Button tweakSearch;
-    private Button selectPlaylist;
     private Song song;
 
     @Nullable
@@ -37,9 +34,9 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
         trackTitle = fragmentView.findViewById(R.id.textView_song_info_title);
         artistName = fragmentView.findViewById(R.id.textView_song_info_artist);
         albumImage = fragmentView.findViewById(R.id.imageView_song_info_image);
-        addToSpotify = fragmentView.findViewById(R.id.button_song_info_add_to_spotify);
-        selectPlaylist = fragmentView.findViewById(R.id.button_select_playlist);
-        tweakSearch = fragmentView.findViewById(R.id.button_tweak_search);
+        Button addToSpotify = fragmentView.findViewById(R.id.button_song_info_add_to_spotify);
+        Button selectPlaylist = fragmentView.findViewById(R.id.button_select_playlist);
+        Button tweakSearch = fragmentView.findViewById(R.id.button_tweak_search);
         song = RadioAPIManager.getInstance().getLastSelectedSong();
         setupFragment();
 
@@ -101,7 +98,7 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
                         String value = input.getText().toString().trim();
                         song.setSearchQuery(value);
                         song.setAlbumCoverURL("");
-                        song.getData(new SongDataCallback() {
+                        song.fetchData(new SongDataCallback() {
                             @Override
                             public void SongUpdated(Song song) {
                                 if(!song.getSpotifyID().equals(""))
@@ -127,15 +124,11 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
         return fragmentView;
     }
 
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
     private void setupFragment(){
         trackTitle.setText(song.getTitle());
         artistName.setText(song.getArtist());
-        if(song.isReady())
+
+        if(song.getIsUpdated())
             Picasso.get().load(song.getAlbumConverURL()).into(albumImage);
         else
             song.subscribe(this);
@@ -144,8 +137,6 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
     @Override
     public void SongUpdated(Song song) {
         if(getActivity() != null && this.song == song)
-        {
             setupFragment();
-        }
     }
 }
