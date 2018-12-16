@@ -230,6 +230,7 @@ public class SpotifyManager {
                     .url("https://api.spotify.com/v1/me/tracks?ids=" + song.getSpotifyID())
                     .put(body)
                     .build();
+        //The selected playlist exists and is
         }else{
 
             //Build empty post body
@@ -239,7 +240,12 @@ public class SpotifyManager {
             //build request
             request = new Request.Builder()
                     .addHeader("Authorization","Bearer " + accessToken)
-                    .url("https://api.spotify.com/v1/playlists/"+ playlists.get(selectedPlaylist) + "/tracks?uris=spotify:track:" + song.getSpotifyID())
+
+                    .url("https://api.spotify.com/v1/playlists/"+
+                            playlists.get(selectedPlaylist) +
+                            "/tracks?uris=spotify:track:" +
+                            song.getSpotifyID())
+
                     .post(body)
                     .build();
         }

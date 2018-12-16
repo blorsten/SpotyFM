@@ -101,6 +101,7 @@ public class Song {
         searchQuery = searchQuery.replaceAll(" and ", " ");
         searchQuery = searchQuery.replaceAll("S!vas", "Sivas");
         searchQuery = searchQuery.replaceAll("Stewie Wonder", "Stevie Wonder");
+        //...
 
         SpotifyManager.getInstance().getService().searchTracks(searchQuery, new Callback<TracksPager>() {
             @Override
