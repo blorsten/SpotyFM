@@ -44,7 +44,8 @@ public class RadioAPIManager implements RadioAPIDataCallback, SongDataCallback {
     }
 
     public void refreshCurrentAPI(){
-        currentAPI.getRecentlyPlayed();
+        if(currentAPI != null)
+            currentAPI.getRecentlyPlayed();
     }
 
     @Override

@@ -37,8 +37,32 @@ public class RadioAPI {
         return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
+
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getCid() {
+        return cid;
+    }
+
+    public void setCid(String cid) {
+        this.cid = cid;
     }
 
     Song[] getRecentSongs() {
