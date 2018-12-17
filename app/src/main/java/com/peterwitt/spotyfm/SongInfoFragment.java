@@ -30,6 +30,8 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        //Save all the references to views in the layout
         fragmentView = inflater.inflate(R.layout.song_info_fragment, container, false );
         trackTitle = fragmentView.findViewById(R.id.textView_song_info_title);
         artistName = fragmentView.findViewById(R.id.textView_song_info_artist);
@@ -44,9 +46,11 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
         addToSpotify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Add to spotify and save output
                 boolean success = SpotifyManager.getInstance().addSongToLibrary(song);
-                String message = null;
 
+                //Make message for the Toast
+                String message;
                 if(success)
                     message = song.getTitle() + " added to " + SpotifyManager.getInstance().getSelectedPlaylist();
                 else
@@ -56,13 +60,15 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
             }
         });
 
-        //select Playlist
+        //select Playlist dialog
         selectPlaylist.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Get the playlist names
                 final String[] playlistNames = SpotifyManager.getInstance().getPlaylistNames().toArray(new String[0]);
-                int currentIntem = 0;
 
+                //Find out which playlist is the current selected one
+                int currentIntem = 0;
                 for (int i = 0; i < playlistNames.length; i++) {
                     if(playlistNames[i].equals(SpotifyManager.getInstance().getSelectedPlaylist())){
                         currentIntem = i;
@@ -70,6 +76,7 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
                     }
                 }
 
+                //Build the dialog with a title and list with a radial showing the current selected
                 AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext());
                 builder.setTitle("Pick playlist")
                         .setSingleChoiceItems(playlistNames, currentIntem, new DialogInterface.OnClickListener() {
@@ -83,19 +90,27 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
             }
         });
 
-        //tweakSearch
+        //tweakSearch dialog
         tweakSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext());
+
+                //Create the editText for the dialog
                 final EditText input = new EditText(fragmentView.getContext());
                 input.setText(song.getSearchQuery());
+
+                //Build the dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(fragmentView.getContext());
                 builder.setTitle("Change spotify search");
                 builder.setView(input);
 
+                //Set OK button
                 builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
+                        //Trim the input
                         String value = input.getText().toString().trim();
+
+                        //update the song
                         song.setSearchQuery(value);
                         song.setAlbumCoverURL("");
                         song.fetchData(new SongDataCallback() {
@@ -110,6 +125,7 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
                     }
                 });
 
+                //Set cancel button
                 builder.setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int whichButton) {
@@ -124,6 +140,9 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
         return fragmentView;
     }
 
+    /***
+     * Sets up the fragment to display info about the song
+     */
     private void setupFragment(){
         trackTitle.setText(song.getTitle());
         artistName.setText(song.getArtist());

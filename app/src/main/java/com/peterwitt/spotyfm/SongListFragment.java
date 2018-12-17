@@ -23,10 +23,11 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-        //Inflate son list and add this to current son list fragment
+        //Inflate song list and add this to current son list fragment
         fragmentView = inflater.inflate(R.layout.song_list_fragment, container, false);
         FragmentHandler.getInstance().setActiveSongFragment(this);
 
+        //Setup swipe to refresh
         swipeRefreshLayout = fragmentView.findViewById(R.id.song_list_fragment_swipeLayout);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -40,13 +41,17 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
 
     @Override
     public void onStart() {
-        //Setup recyclerView
+
+        //Check if the token is valid
         SpotifyManager.getInstance().checkToken();
+
+        //Setup recyclerView
         RecyclerView rv = fragmentView.findViewById(R.id.song_list_fragment_recycleView);
         adapter = new SongAdapter(this);
         rv.setAdapter(adapter);
         rv.setLayoutManager(new LinearLayoutManager(fragmentView.getContext()));
 
+        //Set the title of the actionbar
         MainActivity.instance.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -58,17 +63,22 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
 
     @Override
     public void onSongListItemClicked(Song selected) {
-        //Add song to users library
+        //Go to the song info fragment
         RadioAPIManager.getInstance().setLastSelectedSong(selected);
         FragmentHandler.getInstance().MakeFragment(R.id.main_activity_frame_layout, new SongInfoFragment());
     }
 
     public void SongUpdated() {
+
+        //An update of a song is available
+        //If the activity is still open
         if(getActivity() != null && fragmentView != null){
             getActivity().runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    //The data has changed
                     adapter.notifyDataSetChanged();
+                    //Remove the swipe to refresh circle thingy
                     swipeRefreshLayout.setRefreshing(false);
                 }
             });

@@ -24,10 +24,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Save instance
         instance = this;
 
+        //Setup Spotify Manager
         SpotifyManager.getInstance().setup(this);
 
+        //Set default fragment
         FragmentHandler.getInstance().activity = this;
         if(savedInstanceState == null)
             FragmentHandler.getInstance().MakeFragment(R.id.main_activity_frame_layout, new RadioAPIFragment(), true, false);
@@ -43,10 +46,12 @@ public class MainActivity extends AppCompatActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
 
+        //Time picker dialog
         menu.findItem(R.id.options_pick_time).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
+                //Find time from spotifyManagers time
                 DateTime dateTime = SpotifyManager.getInstance().getDateTime();
                 int mHour = dateTime.hour;
                 int mMinute = dateTime.minute;
@@ -69,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //Reset time
         menu.findItem(R.id.options_reset_time).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
@@ -87,15 +93,19 @@ public class MainActivity extends AppCompatActivity {
 
         //Spoify authentication
         if (requestCode == SpotifyManager.REQUEST_CODE) {
+
+            //if this response is ours
             final AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
 
             switch (response.getType()) {
+
+                //If we got our token
                 case TOKEN:
                     String token = response.getAccessToken();
                     SpotifyManager.getInstance().updateToken(token, response.getExpiresIn());
-                    Toast.makeText(MainActivity.this, "Token expires in: " + response.getExpiresIn(), Toast.LENGTH_SHORT).show();
                     break;
 
+                // if an error happened
                 case ERROR:
                     Toast.makeText(MainActivity.this, response.getError(), Toast.LENGTH_SHORT).show();
                     break;

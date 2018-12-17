@@ -79,12 +79,17 @@ public class RadioAPI {
         apiType = APIType.valueOf(type);
     }
 
+    /***
+     * Gets the recently played depending on the type
+     */
     void getRecentlyPlayed(){
 
+        //Start replacing the URL
         String tempUrl = url.replace("{CID}", cid);
         DateTime dateTime = SpotifyManager.getInstance().getDateTime();
 
         switch (apiType){
+            //Day and hour type
             case JFMedier:
                 String day = dateTime.getNameOfDay();
                 int hour = dateTime.hour;
@@ -93,14 +98,17 @@ public class RadioAPI {
                 tempUrl = tempUrl.replace("{HOUR}", hour + "");
                 break;
 
+            //Timestamp type
             case RadioPlay:
                 tempUrl = tempUrl.replace("{YYYY-MM-DD}", dateTime.getCurrentDate());
                 tempUrl = tempUrl.replace("{HH:MM}", dateTime.getCurrentTime());
 
+            //Count sould be set
             case DR:
                 tempUrl = tempUrl.replace("{COUNT}", String.valueOf(RESULT_COUNT));
         }
 
+        //Create OkHttp client and build request
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(tempUrl)
@@ -143,12 +151,11 @@ public class RadioAPI {
             Song[] songs = new Song[size];
             int index = 0;
 
-            //Add all previous songs to the array
+            //Add all songs to the array
             for (int i = 0; i < root.length(); i++) {
                 JSONObject jsonObject = root.getJSONObject(i);
                 Song song = new Song(jsonObject.getString("nowPlayingTrack"),jsonObject.getString("nowPlayingArtist"));
                 song.setTimeStamp(jsonObject.getString("nowPlayingTime").substring(11,16));
-                //song.setAlbumCoverURL(jsonObject.getString("nowPlayingImage"));
                 songs[index++] = song;
                 song.fetchData(songDataCallback);
             }
@@ -173,7 +180,7 @@ public class RadioAPI {
             Song[] songs = new Song[size];
             int index = 0;
 
-            //Add all previous songs to the array
+            //Add all songs to the array
             for (int i = 0; i < root.length(); i++) {
                 JSONObject jsonObject = root.getJSONObject(i);
                 Song song = new Song(jsonObject.getString("title"),jsonObject.getString("artist"));
@@ -220,20 +227,23 @@ public class RadioAPI {
             Song[] songs;
             int index = 0;
 
+            //Get json ref for previous
             JSONArray previous = root.getJSONArray("previous");
+            //get size of previous songs
             int size = previous.length();
 
             //If a track is playing right now, add it first in the array
             if(root.getJSONObject("now").getString("status").equals("music")){
+                //Create array with previous size plus one
                 songs = new Song[size + 1];
                 Song song = new Song(now.getString("track_title"), now.getString("display_artist"));
                 song.setTimeStamp(now.getString("start_time").substring(11,16));
                 songs[index++] = song;
             }else {
+                //Create array with previous size
                 songs = new Song[size];
             }
 
-            //Get json ref for previous
             //Add all previous songs to the array
             for (int i = 0; i < previous.length(); i++) {
                 JSONObject jsonObject = previous.getJSONObject(i);

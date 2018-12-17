@@ -30,11 +30,16 @@ public class FragmentHandler {
     }
 
     public void MakeFragment(int resId, Fragment fragment, Boolean clean, boolean addToBackStack){
+        //Get the fragmentManager
         FragmentManager fragmentManager = activity.getSupportFragmentManager();
+
+        //If we want to clear the backstack
         if(clean && fragmentManager.getBackStackEntryCount() > 0)
             fragmentManager.popBackStack(0, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
+        //Begin transaction
         FragmentTransaction ft = fragmentManager.beginTransaction();
+        //If sould be added to backstack
         if(addToBackStack)
             ft.addToBackStack(null);
         ft.replace(resId, fragment);

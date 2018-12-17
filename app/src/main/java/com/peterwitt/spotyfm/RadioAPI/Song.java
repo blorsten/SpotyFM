@@ -76,21 +76,35 @@ public class Song {
         this.artist = artist;
     }
 
+    /***
+     *Callback for when the song is updated
+     */
     private void songUpdated(){
         for (SongDataCallback callback : callbacks) {
             callback.SongUpdated(this);
         }
     }
 
+    /***
+     *Indentify the song
+     * @param callback adds a callback to when the song is updated
+     */
     public void fetchData(SongDataCallback callback){
         callbacks.add(callback);
         loadInfo();
     }
 
+    /***
+     * Subscribe to when the song is updated
+     * @param callback
+     */
     public void subscribe(SongDataCallback callback){
         callbacks.add(callback);
     }
 
+    /***
+     * Load the info on the song
+     */
     private void loadInfo() {
 
         //remove characters that do not work with spotify
@@ -103,9 +117,12 @@ public class Song {
         searchQuery = searchQuery.replaceAll("Stewie Wonder", "Stevie Wonder");
         //...
 
+        //Search for the song on Spotify
         SpotifyManager.getInstance().getService().searchTracks(searchQuery, new Callback<TracksPager>() {
             @Override
             public void success(TracksPager tracksPager, Response response) {
+
+                //Get the first track returned
                 List<Track> tracks = tracksPager.tracks.items;
                 if(tracks.size() > 0){
                     Track track = tracks.get(0);
@@ -113,6 +130,8 @@ public class Song {
                         albumCoverURL = track.album.images.get(0).url;
                     spotifyID = track.id;
                     isUpdated = true;
+
+                    //Notify callback that song is updated
                     songUpdated();
                 }
             }
