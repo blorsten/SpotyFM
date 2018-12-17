@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import com.peterwitt.spotyfm.RadioAPI.Adapters.SongAdapter;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongListItemCallback;
+import com.peterwitt.spotyfm.RadioAPI.RadioAPI;
 import com.peterwitt.spotyfm.RadioAPI.RadioAPIManager;
 import com.peterwitt.spotyfm.RadioAPI.Song;
 
@@ -55,7 +56,9 @@ public class SongListFragment extends Fragment implements SongListItemCallback {
         MainActivity.instance.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                MainActivity.instance.setTitle(RadioAPIManager.getInstance().getCurrentAPI().getName());
+                RadioAPI api  = RadioAPIManager.getInstance().getCurrentAPI();
+                if(api != null)
+                    MainActivity.instance.setTitle(api.getName());
             }
         });
         super.onStart();

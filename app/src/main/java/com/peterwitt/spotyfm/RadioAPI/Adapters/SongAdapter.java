@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.peterwitt.spotyfm.MainActivity;
 import com.peterwitt.spotyfm.R;
 import com.peterwitt.spotyfm.RadioAPI.Callbacks.SongListItemCallback;
 import com.peterwitt.spotyfm.RadioAPI.Holders.SongHolder;
@@ -36,6 +38,8 @@ public class SongAdapter extends RecyclerView.Adapter<SongHolder>{
         holder.artistName.setText(model.getArtist());
         holder.songTitle.setText(model.getTitle());
         holder.timeStamp.setText(model.getTimeStamp());
+        holder.coverArt.setImageDrawable(MainActivity.instance.getResources().getDrawable(android.R.drawable.ic_menu_report_image));
+
         if(!model.getAlbumConverURL().equals(""))
             Picasso.get().load(model.getAlbumConverURL()).into(holder.coverArt);
 
