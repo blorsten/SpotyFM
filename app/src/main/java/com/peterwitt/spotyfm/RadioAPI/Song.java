@@ -126,7 +126,7 @@ public class Song {
                 List<Track> tracks = tracksPager.tracks.items;
                 if(tracks.size() > 0){
                     Track track = tracks.get(0);
-                    if(albumCoverURL.equals(""))
+                    if(albumCoverURL.equals("") && track.album.images.size() > 0)
                         albumCoverURL = track.album.images.get(0).url;
                     spotifyID = track.id;
                     isUpdated = true;

@@ -147,7 +147,7 @@ public class SongInfoFragment extends Fragment implements SongDataCallback {
         trackTitle.setText(song.getTitle());
         artistName.setText(song.getArtist());
 
-        if(song.getIsUpdated())
+        if(song.getIsUpdated() && song.getAlbumConverURL() != null && !song.getAlbumConverURL().equals(""))
             Picasso.get().load(song.getAlbumConverURL()).into(albumImage);
         else
             song.subscribe(this);
