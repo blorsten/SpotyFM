@@ -29,6 +29,9 @@ public class RadioAPIManager implements RadioAPIDataCallback, SongDataCallback {
     }
 
     public Song[] getRecentSongs(){
+        if(getCurrentAPI() == null)
+            return new Song[]{};
+
         if(getCurrentAPI().getRecentSongs() == null)
             return  new Song[]{};
         return getCurrentAPI().getRecentSongs();
