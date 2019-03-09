@@ -8,7 +8,7 @@ This project was made as an exam project on my Android course.
 
 ## Current features
 
-![Overview](spotyfm.png)
+![Overview](Spotyfm.png)
 
 - Connect with Spotify account
   - Load users playlists
@@ -27,3 +27,9 @@ I want to release a prettier version someday on Android and IOS but for now, thi
 The app is written in Java in Android Studio over a period of approximately 3 months.
 
 I used Firebase firestore to store the available radio stations, so I can add and remove supported channels without updating the app.
+
+## Download
+
+If you would like to try the app, and have an Android Phone you can download and install the .apk below
+
+[Download](SpotyFM.apk)
