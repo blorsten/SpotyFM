@@ -32,4 +32,4 @@ I used Firebase firestore to store the available radio stations, so I can add an
 
 If you would like to try the app, and have an Android Phone you can download and install the .apk below
 
-[Download](SpotyFM.apk)
+[Download](https://github.com/blorsten/SpotyFM/releases)
